@@ -21,11 +21,14 @@ def login_view(request):
 def signup_view(request):
     error = None
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        name = request.POST.get('full_name', '')
+        email = request.POST.get('email', '')
+        password = request.POST.get('password', '')
+        password_confirm = request.POST.get('password2', '')
         
-        if User.objects.filter(username=email).exists():
+        if password != password_confirm:
+            error = "Passwords do not match."
+        elif User.objects.filter(username=email).exists():
             error = "An account with this email already exists."
         else:
             user = User.objects.create_user(
