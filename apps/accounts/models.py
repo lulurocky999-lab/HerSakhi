@@ -15,7 +15,7 @@ class UserProfile(models.Model):
     # Section 1 - Personal Background
     education_level = models.CharField(max_length=100, blank=True)
     degree = models.CharField(max_length=100, blank=True)
-    graduation_year = models.CharField(max_length=10, blank=True)
+    graduation_year = models.CharField(max_length=100, blank=True)
     current_status = models.CharField(max_length=100, blank=True)
     
     # Section 2 - Interests (stored as JSON array of strings)
