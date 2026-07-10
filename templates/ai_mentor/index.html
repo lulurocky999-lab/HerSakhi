@@ -1,0 +1,927 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}AI Mentor — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Custom styles for AI Mentor page */
+.mentor-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0.5rem;
+}
+.mentor-header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-dark);
+}
+.mentor-subtitle {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+.mentor-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    height: calc(100vh - 200px);
+    min-height: 600px;
+}
+.chat-container {
+    background: var(--card-bg);
+    border-radius: var(--app-radius);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--card-border);
+}
+.chat-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.chat-topbar-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(143, 87, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-violet);
+}
+.chat-topbar-info h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.chat-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+}
+.chat-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.btn-new-chat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid rgba(143, 87, 255, 0.2);
+    background: transparent;
+    color: var(--accent-violet);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-new-chat:hover {
+    background: rgba(143, 87, 255, 0.05);
+}
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    color: var(--text-light);
+    background: transparent;
+    cursor: pointer;
+}
+.btn-icon:hover {
+    background: #F3F4F6;
+}
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.msg-row {
+    display: flex;
+    gap: 12px;
+    max-width: 85%;
+}
+.msg-ai {
+    align-self: flex-start;
+}
+.msg-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+.msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(143, 87, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.msg-bubble {
+    padding: 1rem 1.25rem;
+    border-radius: 0 16px 16px 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+.msg-ai .msg-bubble {
+    background: rgba(143, 87, 255, 0.04);
+    border: 1px solid rgba(143, 87, 255, 0.08);
+    color: var(--text-dark);
+}
+.msg-user .msg-bubble {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 16px 0 16px 16px;
+}
+.msg-time {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin-top: 4px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    align-items: center;
+}
+.ai-list-item {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+.ai-list-icon {
+    color: var(--accent-violet);
+    margin-top: 2px;
+}
+.ai-list-content h4 {
+    margin: 0 0 2px 0;
+    font-size: 0.9rem;
+}
+.ai-list-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+.chat-input-area {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.suggestion-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(143, 87, 255, 0.2);
+    color: var(--accent-violet);
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+.chip:hover {
+    background: rgba(143, 87, 255, 0.05);
+}
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #FFFFFF;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 8px 8px 8px 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+.input-wrapper input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--text-dark);
+}
+.input-wrapper input::placeholder {
+    color: #A1A5B7;
+}
+.btn-attach {
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 4px;
+}
+.btn-send {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent-violet);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-send:hover {
+    background: #7C3AED;
+}
+.disclaimer {
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin: 0;
+}
+.widgets-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.widget-card {
+    background: var(--card-bg);
+    border-radius: var(--app-radius);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    padding: 1.25rem;
+}
+.widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.widget-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-family: 'Sora', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.widget-header a {
+    font-size: 0.75rem;
+    color: var(--accent-violet);
+    text-decoration: none;
+    font-weight: 600;
+}
+.focus-item {
+    margin-bottom: 1rem;
+}
+.focus-item:last-child {
+    margin-bottom: 0;
+}
+.focus-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 4px;
+}
+.focus-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.focus-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.progress-track {
+    flex: 1;
+    height: 6px;
+    background: #EEF0F7;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: var(--accent-violet);
+    border-radius: 3px;
+}
+.progress-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-violet);
+}
+.daily-goal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(143, 87, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(143, 87, 255, 0.08);
+}
+.daily-goal-icon {
+    color: var(--accent-violet);
+}
+.daily-goal-text {
+    display: flex;
+    flex-direction: column;
+}
+.daily-goal-text span:first-child {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+.daily-goal-text span:last-child {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+.topic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.topic-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #F3F4F6;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.topic-item:last-child {
+    border-bottom: none;
+}
+.topic-item:hover {
+    color: var(--accent-violet);
+}
+.topic-item svg {
+    color: var(--text-light);
+    width: 14px;
+    height: 14px;
+}
+.conv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.conv-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.conv-icon {
+    color: var(--accent-violet);
+}
+.conv-text {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.conv-time {
+    font-size: 0.7rem;
+    color: var(--text-light);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <div>
+        <div class="mentor-header">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2L11.5 7.5L17 9L11.5 10.5L10 16L8.5 10.5L3 9L8.5 7.5L10 2Z" fill="#8F57FF"/>
+                <path d="M19 14L19.75 16.75L22.5 17.5L19.75 18.25L19 21L18.25 18.25L15.5 17.5L18.25 16.75L19 14Z" fill="#8F57FF"/>
+                <path d="M5 17L5.5 18.5L7 19L5.5 19.5L5 21L4.5 19.5L3 19L4.5 18.5L5 17Z" fill="#8F57FF"/>
+            </svg>
+            <h1>AI Mentor</h1>
+        </div>
+        <div class="mentor-subtitle">
+            Your personal AI companion for guidance, clarity and growth.
+        </div>
+    </div>
+
+    <div class="mentor-layout">
+        <!-- Chat Container -->
+        <div class="chat-container">
+            <div class="chat-topbar">
+                <div class="chat-topbar-left">
+                    <div class="chat-topbar-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 2L11.5 7.5L17 9L11.5 10.5L10 16L8.5 10.5L3 9L8.5 7.5L10 2Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="chat-topbar-info">
+                        <h3>AI Mentor</h3>
+                        <div class="chat-status">
+                            <span class="status-dot"></span>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-topbar-right">
+                    <button class="btn-new-chat" id="newChatButton">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        New Chat
+                    </button>
+                    <button class="btn-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <!-- Messages will be loaded here dynamically -->
+                <div class="msg-row msg-ai">
+                    <div class="msg-avatar">
+                        <img src="{% static 'images/logo.png' %}" style="width: 20px;" alt="AI" />
+                    </div>
+                    <div>
+                        <div class="msg-bubble">
+                            <p style="margin: 0 0 8px 0; font-weight: 600;">Hi {{ user.first_name|default:"there" }}! 👋</p>
+                            <p style="margin: 0 0 12px 0;">I'm HerSakhi, your AI Mentor. I'm here to help you with career guidance, skill development, opportunities and any questions you have.</p>
+                            <p style="margin: 0;">How can I assist you today?</p>
+                        </div>
+                        <div class="msg-time" style="justify-content: flex-start;">Now</div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="suggestion-chips">
+                    <button class="chip" onclick="setInput('Create a study plan')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        Create a study plan
+                    </button>
+                    <button class="chip" onclick="setInput('Recommend projects')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                        Recommend projects
+                    </button>
+                    <button class="chip" onclick="setInput('Find internships')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Find internships
+                    </button>
+                    <button class="chip" onclick="setInput('Improve my resume')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        Improve my resume
+                    </button>
+                </div>
+                
+                <div class="input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Ask anything about your career..." />
+                    <input type="file" id="attachmentInput" accept=".txt,.pdf" style="display:none;" />
+                    <button type="button" id="attachmentButton" class="btn-attach">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
+                    <button type="button" id="sendButton" class="btn-send">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+                <p class="disclaimer">AI responses can make mistakes. Please verify important information.</p>
+            </div>
+        </div>
+
+        <!-- Right Widgets -->
+        <div class="widgets-container">
+            <!-- Today's Focus -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        Today's Focus
+                    </h3>
+                </div>
+                {% if profile and profile.dream_role %}
+                <div class="focus-item">
+                    <div class="focus-label">Career Goal</div>
+                    <div class="focus-title">{{ profile.dream_role }}</div>
+                    <div class="focus-progress-wrap">
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: {{ stat.profile_progress|default:0 }}%;"></div>
+                        </div>
+                        <div class="progress-text">{{ stat.profile_progress|default:0 }}%</div>
+                    </div>
+                </div>
+                <div class="daily-goal">
+                    <div class="daily-goal-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="daily-goal-text">
+                        <span>Active chats</span>
+                        <span>{{ conversation_count }} conversations</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="focus-item">
+                    <div class="focus-label">Profile Required</div>
+                    <div class="focus-title">Add your dream role to personalize your focus.</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Suggested Topics -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1.45.62 2.74 1.5 3.5.76.75 1.23 1.51 1.41 2.5"/></svg>
+                        Suggested Topics
+                    </h3>
+                </div>
+                <div class="topic-list" id="suggestedTopics">
+                    {% if suggested_topics %}
+                        {% for topic in suggested_topics %}
+                        <div class="topic-item" onclick="setInput('{{ topic }}')">
+                            {{ topic }}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="topic-item">
+                            No suggested topics available yet. Ask a question to get personalized suggestions.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Your Conversations -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Your Conversations
+                    </h3>
+                    <a href="{% url 'ai_mentor:conversation_list' %}">View All ></a>
+                </div>
+                <div class="conv-list">
+                    {% if conversations %}
+                        {% for conv in conversations %}
+                        <div class="conv-item">
+                            <div class="conv-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+                            </div>
+                            <div class="conv-text">{{ conv.title }}</div>
+                            <div class="conv-time">{{ conv.time }}</div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="conv-item">
+                            <div class="conv-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+                            </div>
+                            <div class="conv-text">No conversations yet. Start chatting to see your history here.</div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function setInput(text) {
+    document.getElementById('chatInput').value = text;
+    document.getElementById('chatInput').focus();
+}
+
+function handleKeyPress(e) {
+    if (e.key === 'Enter') sendMessage();
+}
+
+function triggerAttachment() {
+    document.getElementById('attachmentInput').click();
+}
+
+function handleAttachment(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const supportedTypes = ['text/plain', 'application/pdf'];
+    if (!supportedTypes.includes(file.type)) {
+        const chatHistory = document.getElementById('chatHistory');
+        chatHistory.appendChild(createAIBubble('This file type is not supported. Please upload a .txt or .pdf file.', []));
+        scrollToBottom();
+        return;
+    }
+
+    if (file.type === 'text/plain') {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const content = reader.result;
+            sendMessage(content, { fileName: file.name, fileType: file.type });
+        };
+        reader.onerror = () => {
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.appendChild(createAIBubble('Unable to read the selected file. Please try again.', []));
+            scrollToBottom();
+        };
+        reader.readAsText(file);
+    } else {
+        sendMessage(null, { fileName: file.name, fileType: file.type, fileContent: null });
+    }
+}
+
+async function sendMessage(attachmentText = null, attachmentMeta = null) {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg && !attachmentMeta) return;
+    
+    let displayText = msg;
+    if (attachmentMeta && attachmentMeta.fileName) {
+        displayText = msg ? `${msg} (attached ${attachmentMeta.fileName})` : `Attached file: ${attachmentMeta.fileName}`;
+    }
+
+    input.value = '';
+    
+    const chatHistory = document.getElementById('chatHistory');
+    chatHistory.appendChild(createUserBubble(displayText));
+    scrollToBottom();
+    
+    const loadingId = 'loading-' + Date.now();
+    chatHistory.appendChild(createAILoadingBubble(loadingId));
+    scrollToBottom();
+    
+    try {
+        const payload = { message: msg };
+        if (currentConversationId) {
+            payload.conversation_id = currentConversationId;
+        }
+        if (attachmentMeta) {
+            payload.attachment = {
+                file_name: attachmentMeta.fileName,
+                file_type: attachmentMeta.fileType,
+                content: attachmentText || attachmentMeta.fileContent || ''
+            };
+        }
+        const response = await fetch("{% url 'ai_mentor:chat_endpoint' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        const loader = document.getElementById(loadingId);
+        if (loader) loader.remove();
+        
+        if (data.success && data.reply) {
+            chatHistory.appendChild(createAIBubble(data.reply, data.suggested_actions));
+        } else {
+            chatHistory.appendChild(createAIBubble(data.message || 'AI is not available right now. Please try again later.', []));
+        }
+    } catch (e) {
+        const loader = document.getElementById(loadingId);
+        if (loader) loader.remove();
+        chatHistory.appendChild(createAIBubble('A network error occurred. Please try again.', []));
+    }
+    
+    scrollToBottom();
+}
+
+function getCurrentTime() {
+    return new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
+function createUserBubble(text) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg-row msg-user';
+
+    const inner = document.createElement('div');
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.textContent = text;
+
+    const timeRow = document.createElement('div');
+    timeRow.className = 'msg-time';
+    timeRow.innerHTML = `${getCurrentTime()}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    inner.appendChild(bubble);
+    inner.appendChild(timeRow);
+    wrapper.appendChild(inner);
+    return wrapper;
+}
+
+function createAIBubble(text, actions = []) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg-row msg-ai';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    const avatarImg = document.createElement('img');
+    avatarImg.src = '{% static "images/logo.png" %}';
+    avatarImg.alt = 'AI';
+    avatarImg.style.width = '20px';
+    avatar.appendChild(avatarImg);
+
+    const inner = document.createElement('div');
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = text.replace(/\n/g, '<br/>');
+    if (actions && actions.length > 0) {
+        const actionWrap = document.createElement('div');
+        actionWrap.style.marginTop = '1rem';
+        actionWrap.style.display = 'flex';
+        actionWrap.style.flexWrap = 'wrap';
+        actionWrap.style.gap = '0.5rem';
+
+        actions.forEach(action => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'chip';
+            button.textContent = action;
+            button.addEventListener('click', () => setInput(action));
+            actionWrap.appendChild(button);
+        });
+
+        inner.appendChild(actionWrap);
+    }
+
+    const timeRow = document.createElement('div');
+    timeRow.className = 'msg-time';
+    timeRow.style.justifyContent = 'flex-start';
+    timeRow.textContent = getCurrentTime();
+
+    inner.insertBefore(bubble, inner.firstChild);
+    inner.appendChild(timeRow);
+    wrapper.appendChild(avatar);
+    wrapper.appendChild(inner);
+    return wrapper;
+}
+
+function createAILoadingBubble(id) {
+    const wrapper = document.createElement('div');
+    wrapper.id = id;
+    wrapper.className = 'msg-row msg-ai';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    const avatarImg = document.createElement('img');
+    avatarImg.src = '{% static "images/logo.png" %}';
+    avatarImg.alt = 'AI';
+    avatarImg.style.width = '20px';
+    avatar.appendChild(avatarImg);
+
+    const inner = document.createElement('div');
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.style.display = 'flex';
+    bubble.style.gap = '4px';
+    bubble.style.alignItems = 'center';
+    bubble.style.minHeight = '44px';
+
+    [0, 0.2, 0.4].forEach(delay => {
+        const dot = document.createElement('div');
+        dot.style.width = '6px';
+        dot.style.height = '6px';
+        dot.style.borderRadius = '50%';
+        dot.style.background = 'var(--text-light)';
+        dot.style.animation = 'blink 1.4s infinite both';
+        if (delay > 0) dot.style.animationDelay = `${delay}s`;
+        bubble.appendChild(dot);
+    });
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = '@keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }';
+    bubble.appendChild(styleEl);
+
+    inner.appendChild(bubble);
+    wrapper.appendChild(avatar);
+    wrapper.appendChild(inner);
+    return wrapper;
+}
+
+function scrollToBottom() {
+    const chatHistory = document.getElementById('chatHistory');
+    if (chatHistory) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+}
+
+let currentConversationId = null;
+
+function bindMentorEvents() {
+    const sendButton = document.getElementById('sendButton');
+    const newChatButton = document.getElementById('newChatButton');
+    const attachmentButton = document.getElementById('attachmentButton');
+    const attachmentInput = document.getElementById('attachmentInput');
+    const chatInput = document.getElementById('chatInput');
+
+    if (sendButton) {
+        sendButton.addEventListener('click', () => sendMessage());
+    }
+    if (newChatButton) {
+        newChatButton.addEventListener('click', createNewChat);
+    }
+    if (attachmentButton && attachmentInput) {
+        attachmentButton.addEventListener('click', () => attachmentInput.click());
+        attachmentInput.addEventListener('change', handleAttachment);
+    }
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+}
+
+// Load Chat History on mount
+document.addEventListener('DOMContentLoaded', async () => {
+    bindMentorEvents();
+
+    try {
+        const response = await fetch("{% url 'ai_mentor:chat_history' %}");
+        const data = await response.json();
+        
+        if (data.success && data.history && data.history.length > 0) {
+            const chatHistory = document.getElementById('chatHistory');
+            // Clear default greeting if we have history
+            chatHistory.innerHTML = ''; 
+            
+            data.history.forEach(msg => {
+                if (msg.role === 'user') {
+                    chatHistory.appendChild(createUserBubble(msg.content));
+                } else {
+                    chatHistory.appendChild(createAIBubble(msg.content));
+                }
+            });
+            currentConversationId = data.conversation_id || null;
+            scrollToBottom();
+        }
+
+        // Remove placeholder suggested topics when no personal topics exist
+        const suggestedTopicsEl = document.getElementById('suggestedTopics');
+        if (suggestedTopicsEl) {
+            suggestedTopicsEl.innerHTML = '';
+        }
+    } catch (e) {
+        console.error("Failed to load history", e);
+    }
+});
+
+async function createNewChat() {
+    try {
+        const response = await fetch("{% url 'ai_mentor:new_conversation' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify({})
+        });
+        const data = await response.json();
+        if (data.success) {
+            currentConversationId = data.conversation_id;
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.innerHTML = '';
+            chatHistory.appendChild(createAIBubble("New chat started. How can I help you today?"));
+            scrollToBottom();
+        } else {
+            alert(data.message || 'Unable to start a new chat.');
+        }
+    } catch (e) {
+        console.error('Failed to create new chat', e);
+        alert('Unable to start a new chat. Please try again.');
+    }
+}
+</script>
+{% endblock %}

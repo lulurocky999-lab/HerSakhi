@@ -1,0 +1,925 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Skill Gap Analysis — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+    .gap-container {
+        padding: 0.5rem 2.5rem 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-sizing: border-box;
+    }
+
+    /* Metric Cards Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+    }
+    .metric-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: var(--card-shadow);
+        box-sizing: border-box;
+    }
+    .metric-card.gauge-card {
+        padding: 0.75rem 1.25rem;
+    }
+    .gauge-wrapper {
+        position: relative;
+        width: 100px;
+        height: 55px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 5px;
+        flex-shrink: 0;
+    }
+    .gauge-text-overlay {
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .gauge-percentage {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+        line-height: 1.1;
+    }
+    .gauge-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: var(--text-light);
+    }
+    .metric-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .metric-icon-box.have-icon { background: rgba(34, 197, 94, 0.08); color: var(--success); }
+    .metric-icon-box.improve-icon { background: rgba(245, 158, 11, 0.08); color: var(--warning); }
+    .metric-icon-box.lack-icon { background: rgba(239, 68, 68, 0.08); color: #EF4444; }
+    
+    .metric-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+    }
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    .metric-value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+        line-height: 1.2;
+    }
+    .metric-sub {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 500;
+        margin-top: 1px;
+    }
+    .change-badge {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.15);
+        border-radius: 10px;
+        color: var(--success);
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        margin-top: 3px;
+        display: inline-block;
+    }
+
+    /* Action Buttons */
+    .retake-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.6rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .retake-btn:hover {
+        background: var(--accent-violet-light);
+    }
+    .download-report-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.35rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.25);
+        transition: all 0.25s ease;
+    }
+    .download-report-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0px 6px 16px rgba(143, 87, 255, 0.35);
+    }
+
+    /* Stacked Bar Breakdown Charts */
+    .breakdown-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 1.25rem;
+    }
+    .breakdown-row {
+        display: grid;
+        grid-template-columns: 200px 1fr 100px;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .breakdown-category-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+    .stacked-bar-container {
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #EEF0F7;
+        display: flex;
+        width: 100%;
+    }
+    .stacked-segment {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .stacked-segment.have { background: #22C55E; }
+    .stacked-segment.improve { background: #F59E0B; }
+    .stacked-segment.lack { background: #EF4444; }
+    .breakdown-labels {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+        text-align: right;
+    }
+    .breakdown-labels span {
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+
+    /* Top Skill Gaps Cards */
+    .gaps-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        margin-top: 1rem;
+    }
+    .gap-detail-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.1rem 1.25rem;
+        box-shadow: var(--card-shadow);
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .gap-detail-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+    .gap-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .gap-card-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .gap-priority-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 8px;
+        background: rgba(239, 68, 68, 0.08);
+        color: #EF4444;
+    }
+    .gap-metric-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-light);
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+    .gap-metric-row span {
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+    .gap-impact-stars {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--card-border);
+    }
+    .stars-box {
+        display: flex;
+        color: #8F57FF;
+    }
+
+    /* Right Sidebar: Target Role layout */
+    .sidebar-ring-container {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .sidebar-ring {
+        transform: rotate(-90deg);
+    }
+    .sidebar-ring__circle {
+        transition: stroke-dashoffset 0.35s;
+        transform-origin: 50% 50%;
+    }
+    .sidebar-ring-text {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .sidebar-match-val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+    }
+    .sidebar-match-lbl {
+        font-size: 0.55rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    
+    .role-bullet-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.25rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .role-bullet-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .role-bullet-label-col {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .role-bullet-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+    .role-bullet-dot.dot-req { background: #8F57FF; }
+    .role-bullet-dot.dot-have { background: #22C55E; }
+    .role-bullet-dot.dot-improve { background: #F59E0B; }
+    .role-bullet-dot.dot-lack { background: #EF4444; }
+    .role-bullet-val {
+        font-weight: 700;
+    }
+
+    .change-role-btn {
+        width: 100%;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+    .change-role-btn:hover {
+        background: var(--accent-violet-light);
+    }
+
+    /* Recommended Steps cards */
+    .next-steps-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .next-step-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1rem;
+        border-radius: 14px;
+        background: #F8F9FD;
+        border: 1px solid var(--card-border);
+    }
+    .next-step-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .next-step-icon-box.success { background: rgba(34, 197, 94, 0.08); color: var(--success); }
+    .next-step-icon-box.primary { background: rgba(143, 87, 255, 0.08); color: var(--accent-violet); }
+    .next-step-icon-box.warning { background: rgba(245, 158, 11, 0.08); color: var(--warning); }
+    
+    .next-step-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+    .next-step-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+    .next-step-desc {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        margin-top: 1px;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .next-step-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .next-step-badge.success { background: var(--success-bg); color: var(--success); }
+    .next-step-badge.primary { background: var(--accent-violet-light); color: var(--accent-violet); }
+    .next-step-badge.warning { background: var(--warning-bg); color: var(--warning); }
+
+    /* Bottom Tip banner */
+    .tip-banner-card {
+        background: linear-gradient(135deg, rgba(143, 87, 255, 0.04), rgba(233, 67, 150, 0.02));
+        border: 1px solid rgba(143, 87, 255, 0.15);
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--card-shadow);
+    }
+    .tip-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.8rem;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+    .tip-icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent-violet-light);
+        color: var(--accent-violet);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .get-ai-recs-btn {
+        background: transparent;
+        color: var(--accent-violet);
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .get-ai-recs-btn:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gap-container">
+
+    <!-- Breadcrumb -->
+    <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 500; display:flex; gap: 4px;">
+        <span>Assessment</span>
+        <span>&gt;&gt;</span>
+        <span style="color: var(--accent-violet); font-weight: 600;">Skill Gap Analysis</span>
+    </div>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="assessment-layout">
+        
+        <!-- Left Column: Main Analysis breakdown (70%) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Page Title & Actions -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem;">Skill Gap Analysis ✨</h1>
+                    <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">Discover the skills you need to reach your dream role and get personalized recommendations to bridge the gaps.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="retake-btn" onclick="openRoleModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                        Retake Assessment
+                    </button>
+                    <button class="download-report-btn" onclick="showToast('Preparing skill gap analysis report download...', 'success')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row of 4 Metric Cards -->
+            <div class="metrics-grid">
+                <!-- Gauge circular card -->
+                <div class="metric-card gauge-card">
+                    <div class="gauge-wrapper">
+                        <svg viewBox="0 0 100 50" width="80" height="40" style="display:block;">
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" stroke="#EEF0F7" stroke-width="8" fill="none" stroke-linecap="round"/>
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" stroke="#8F57FF" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="40.2" id="gauge-path" style="transition: stroke-dashoffset 0.3s;"/>
+                        </svg>
+                        <div class="gauge-text-overlay">
+                            <span class="gauge-percentage" id="gauge-pct-text">68%</span>
+                            <span class="gauge-label">Match</span>
+                        </div>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label" style="font-size:0.7rem; font-weight:700;" id="metric-match-label">Good Match</span>
+                        <span class="change-badge" id="metric-match-change">+12% from last analysis</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box have-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Skills You Have</span>
+                        <span class="metric-value" id="val-have">28</span>
+                        <span class="metric-sub" id="lbl-have">60% of required skills</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box improve-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Skills to Improve</span>
+                        <span class="metric-value" id="val-improve">12</span>
+                        <span class="metric-sub" id="lbl-improve">25% of required skills</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box lack-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Skills You Lack</span>
+                        <span class="metric-value" id="val-lack">8</span>
+                        <span class="metric-sub" id="lbl-lack">15% of required skills</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Gap Breakdown List -->
+            <div class="app-card" style="padding: 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-dark); font-family: 'Sora', sans-serif; margin:0;">Skill Gap Breakdown</h3>
+                    <!-- Legend -->
+                    <div style="display:flex; gap:16px; font-size:0.75rem; font-weight:600; color:var(--text-light);">
+                        <span style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22C55E;"></span>You Have</span>
+                        <span style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#F59E0B;"></span>To Improve</span>
+                        <span style="display:flex; align-items:center; gap:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#EF4444;"></span>You Lack</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-list" id="breakdown-list">
+                    <!-- Dynamic breakdown rows -->
+                </div>
+
+                <button class="explore-all-btn" style="margin-top: 1.5rem;" onclick="showToast('Displaying detailed report modal...', 'success')">
+                    View Detailed Skill Report →
+                </button>
+            </div>
+
+            <!-- Top Skill Gaps to Address -->
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-dark); font-family: 'Sora', sans-serif; margin:0;">Top Skill Gaps to Address</h3>
+                    <a href="#" style="font-size: 0.8rem; color: var(--accent-violet); text-decoration: none; font-weight: 600;">View All Gaps →</a>
+                </div>
+
+                <div class="gaps-row" id="gaps-row">
+                    <!-- Dynamic gap detail cards -->
+                </div>
+            </div>
+
+            <!-- Bottom Tip Full-Width Banner -->
+            <div class="tip-banner-card">
+                <div class="tip-content">
+                    <div class="tip-icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .5 2.5 1.5 3.5.7.8 1.3 1.5 1.5 2.5"/><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/></svg>
+                    </div>
+                    <span><strong>Tip:</strong> Focus on closing high-impact skill gaps first to maximize your career growth potential.</span>
+                </div>
+                <button class="get-ai-recs-btn" onclick="openRoleModal()">
+                    Get AI Recommendations →
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Right Side Panel Column (30%) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Target Role Card -->
+            <div class="app-card" style="padding: 1.25rem;">
+                <h4 class="sidebar-section-title" style="margin-bottom: 1rem;">Target Role</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h3 id="sidebar-role-title" style="font-family:'Sora',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text-dark); margin:0;">Software Engineer</h3>
+                        <span id="sidebar-role-meta" style="font-size:0.75rem; color:var(--text-light); font-weight:500; margin-top:2px; display:block;">Technology &bull; Entry Level</span>
+                    </div>
+
+                    <!-- Circular progress match -->
+                    <div class="sidebar-ring-container">
+                        <svg class="sidebar-ring" width="80" height="80">
+                            <circle class="progress-ring__background" stroke="#EEF0F7" stroke-width="6" fill="transparent" r="32" cx="40" cy="40"/>
+                            <circle class="sidebar-ring__circle" stroke="url(#progressGradRightRole)" stroke-width="6" fill="transparent" r="32" cx="40" cy="40" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="progressGradRightRole" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#8F57FF"/>
+                                    <stop offset="100%" stop-color="#E94396"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="sidebar-ring-text">
+                            <span class="sidebar-match-val" id="sidebar-match-pct">68%</span>
+                            <span class="sidebar-match-lbl">Match</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bullets breakdown -->
+                <div class="role-bullet-list">
+                    <div class="role-bullet-item">
+                        <div class="role-bullet-label-col">
+                            <div class="role-bullet-dot dot-req"></div>
+                            <span>Required Skills</span>
+                        </div>
+                        <span class="role-bullet-val" id="sidebar-req-count">48</span>
+                    </div>
+                    <div class="role-bullet-item">
+                        <div class="role-bullet-label-col">
+                            <div class="role-bullet-dot dot-have"></div>
+                            <span>Your Strong Skills</span>
+                        </div>
+                        <span class="role-bullet-val" id="sidebar-have-count">28</span>
+                    </div>
+                    <div class="role-bullet-item">
+                        <div class="role-bullet-label-col">
+                            <div class="role-bullet-dot dot-improve"></div>
+                            <span>Skills to Improve</span>
+                        </div>
+                        <span class="role-bullet-val" id="sidebar-improve-count">12</span>
+                    </div>
+                    <div class="role-bullet-item">
+                        <div class="role-bullet-label-col">
+                            <div class="role-bullet-dot dot-lack"></div>
+                            <span>Skills You Lack</span>
+                        </div>
+                        <span class="role-bullet-val" id="sidebar-lack-count">8</span>
+                    </div>
+                </div>
+
+                <button class="change-role-btn" onclick="openRoleModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Change Target Role
+                </button>
+            </div>
+
+            <!-- Recommended Next Steps -->
+            <div class="app-card">
+                <h4 class="sidebar-section-title" style="margin-bottom: 1.25rem;">Recommended Next Steps</h4>
+                <div class="next-steps-list" id="recommended-next-steps">
+                    <!-- Dynamic next steps -->
+                </div>
+                <a href="#" style="font-size: 0.75rem; color: var(--accent-violet); text-decoration: none; font-weight: 600; text-align: center; display: block; margin-top: 1.25rem;">View Full Learning Plan →</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CHANGE TARGET ROLE MODAL                   -->
+<!-- ========================================== -->
+<div class="roadmap-modal-overlay" id="role-modal" style="display: none;">
+    <div class="roadmap-modal-content">
+        <div class="roadmap-modal-header">
+            <h3>Analyze Skill Gap For Target Role</h3>
+            <button class="modal-close-btn" onclick="closeRoleModal()">&times;</button>
+        </div>
+        <div class="roadmap-modal-body">
+            <div class="modal-form-group">
+                <label for="inputTargetRole">Target Role / Career Goal</label>
+                <input type="text" id="inputTargetRole" placeholder="e.g. Software Engineer" value="Software Engineer">
+            </div>
+            <div class="modal-form-group">
+                <label for="inputCurrentSkills">Your Current Skills</label>
+                <input type="text" id="inputCurrentSkills" placeholder="e.g. HTML, CSS, JavaScript" value="HTML, CSS, JavaScript, Basic Python, Git">
+            </div>
+            <button class="modal-submit-btn" onclick="submitAISkillGap()">
+                <span id="submit-btn-text">Analyze Skill Gap</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Loading Overlay -->
+<div class="roadmap-modal-overlay" id="loading-overlay-generation" style="display: none; flex-direction: column; gap: 1.25rem; z-index: 1100;">
+    <div class="loading-spinner"></div>
+    <div style="color: white; font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 600; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+        AI is analyzing your skill gap...<br>
+        <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8; margin-top: 5px; display: block;">Evaluating curriculum requirements.</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // State management
+    let gapData = null;
+
+    try {
+        gapData = {{ skill_gap_json|safe }};
+    } catch(e) {
+        console.error("Failed to parse skill gap data", e);
+    }
+
+    // Modal controls
+    function openRoleModal() {
+        document.getElementById('role-modal').style.display = 'flex';
+    }
+    function closeRoleModal() {
+        document.getElementById('role-modal').style.display = 'none';
+    }
+
+    // Run AI analysis
+    async function submitAISkillGap() {
+        const target = document.getElementById('inputTargetRole').value.trim();
+        const current = document.getElementById('inputCurrentSkills').value.trim();
+
+        if (!target || !current) {
+            showToast("Please fill in both target role and current skills.", "error");
+            return;
+        }
+
+        closeRoleModal();
+        document.getElementById('loading-overlay-generation').style.display = 'flex';
+
+        try {
+            const response = await fetch("{% url 'skill_gap:analyze' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    target_role: target,
+                    current_skills: current
+                })
+            });
+
+            const resData = await response.json();
+            if (resData.success) {
+                gapData = resData.data;
+                renderSkillGap(gapData);
+            } else {
+                showToast("Skill Gap Analysis failed: " + resData.message, "error");
+            }
+        } catch(e) {
+            showToast("Network error: Failed to connect to analysis service.", "error");
+        } finally {
+            document.getElementById('loading-overlay-generation').style.display = 'none';
+        }
+    }
+
+    // Render function
+    function renderSkillGap(data) {
+        if (!data) return;
+
+        // Metric values
+        document.getElementById('gauge-pct-text').innerText = `${data.match_pct}%`;
+        document.getElementById('metric-match-label').innerText = data.match_label;
+        document.getElementById('metric-match-change').innerText = data.match_change;
+        
+        document.getElementById('val-have').innerText = data.skills_have;
+        document.getElementById('lbl-have').innerText = `${Math.round(data.skills_have / (data.skills_have + data.skills_improve + data.skills_lack) * 100)}% of required skills`;
+        
+        document.getElementById('val-improve').innerText = data.skills_improve;
+        document.getElementById('lbl-improve').innerText = `${Math.round(data.skills_improve / (data.skills_have + data.skills_improve + data.skills_lack) * 100)}% of required skills`;
+        
+        document.getElementById('val-lack').innerText = data.skills_lack;
+        document.getElementById('lbl-lack').innerText = `${Math.round(data.skills_lack / (data.skills_have + data.skills_improve + data.skills_lack) * 100)}% of required skills`;
+
+        // Update semi-circle gauge arc stroke-dashoffset
+        const gaugePath = document.getElementById('gauge-path');
+        if (gaugePath) {
+            const pathLength = 125.6; // calculated semi-circle length
+            const offset = pathLength - (data.match_pct / 100) * pathLength;
+            gaugePath.style.strokeDashoffset = offset;
+        }
+
+        // Sidebar values
+        document.getElementById('sidebar-role-title').innerText = data.target_role.title;
+        document.getElementById('sidebar-role-meta').innerHTML = `${data.target_role.industry} &bull; ${data.target_role.experience}`;
+        document.getElementById('sidebar-match-pct').innerText = `${data.target_role.match_pct}%`;
+        document.getElementById('sidebar-req-count').innerText = data.target_role.total_required;
+        document.getElementById('sidebar-have-count').innerText = data.target_role.have;
+        document.getElementById('sidebar-improve-count').innerText = data.target_role.improve;
+        document.getElementById('sidebar-lack-count').innerText = data.target_role.lack;
+
+        // Update sidebar circle match ring
+        const circle = document.querySelector('.sidebar-ring__circle');
+        if (circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            const offset = circumference - (data.target_role.match_pct / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Render category breakdown list
+        const bdContainer = document.getElementById('breakdown-list');
+        bdContainer.innerHTML = '';
+        if (data.breakdown && Array.isArray(data.breakdown)) {
+            data.breakdown.forEach(row => {
+                const flexRow = document.createElement('div');
+                flexRow.className = 'breakdown-row';
+                flexRow.innerHTML = `
+                    <span class="breakdown-category-label">${row.category}</span>
+                    <div class="stacked-bar-container">
+                        <div class="stacked-segment have" style="width: ${row.have}%"></div>
+                        <div class="stacked-segment improve" style="width: ${row.improve}%"></div>
+                        <div class="stacked-segment lack" style="width: ${row.lack}%"></div>
+                    </div>
+                    <div class="breakdown-labels">
+                        <span>${row.have}%</span> / ${row.improve}%
+                    </div>
+                `;
+                bdContainer.appendChild(flexRow);
+            });
+        }
+
+        // Render top skill gaps detail cards
+        const gapsContainer = document.getElementById('gaps-row');
+        gapsContainer.innerHTML = '';
+        if (data.top_gaps && Array.isArray(data.top_gaps)) {
+            data.top_gaps.forEach(gap => {
+                const card = document.createElement('div');
+                card.className = 'gap-detail-card';
+
+                // Star rendering
+                let starsHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    if (i < gap.impact) {
+                        starsHTML += `<span style="font-size:12px;">★</span>`;
+                    } else {
+                        starsHTML += `<span style="font-size:12px; opacity:0.3;">★</span>`;
+                    }
+                }
+
+                card.innerHTML = `
+                    <div class="gap-card-header">
+                        <h4 class="gap-card-title">${gap.skill}</h4>
+                        <span class="gap-priority-badge">${gap.level} Priority</span>
+                    </div>
+                    <div class="gap-metric-row">
+                        <span>Current Level</span>
+                        <span>${gap.current}%</span>
+                    </div>
+                    <div class="gap-metric-row">
+                        <span>Required Level</span>
+                        <span>${gap.required}%</span>
+                    </div>
+                    <div class="gap-impact-stars">
+                        <span>Career Impact:</span>
+                        <div class="stars-box">${starsHTML}</div>
+                    </div>
+                `;
+                gapsContainer.appendChild(card);
+            });
+        }
+
+        // Render next steps
+        const stepsContainer = document.getElementById('recommended-next-steps');
+        stepsContainer.innerHTML = '';
+        if (data.next_steps && Array.isArray(data.next_steps)) {
+            data.next_steps.forEach(step => {
+                const item = document.createElement('div');
+                item.className = 'next-step-item';
+                
+                let iconSVG = '';
+                if (step.theme === 'success') {
+                    iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.5 2-11.5 11.5-4-4"/></svg>`;
+                } else if (step.theme === 'primary') {
+                    iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>`;
+                } else {
+                    iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="21" x2="9" y2="9"/><line x1="15" y1="21" x2="15" y2="9"/><line x1="9" y1="9" x2="15" y2="9"/></svg>`;
+                }
+
+                item.innerHTML = `
+                    <div class="next-step-icon-box ${step.theme}">
+                        ${iconSVG}
+                    </div>
+                    <div class="next-step-info">
+                        <span class="next-step-title">${step.title}</span>
+                        <span class="next-step-desc">${step.desc}</span>
+                    </div>
+                    <span class="next-step-badge ${step.theme}">${step.badge}</span>
+                `;
+                stepsContainer.appendChild(item);
+            });
+        }
+    }
+
+    // Initial draw on DOM load
+    function initSkillGap() {
+        if (gapData) {
+            renderSkillGap(gapData);
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSkillGap);
+    } else {
+        initSkillGap();
+    }
+</script>
+{% endblock %}

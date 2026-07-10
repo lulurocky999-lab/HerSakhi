@@ -1,0 +1,1001 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}My Profile — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Page Header */
+.profile-page-header {
+    margin-bottom: 2rem;
+}
+.profile-page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 0.5rem 0;
+}
+.profile-page-header h1 svg {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-violet);
+}
+.profile-page-header p {
+    color: var(--text-light);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Layout */
+.profile-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+}
+
+/* Base Card */
+.profile-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Hero Card (Special) */
+.hero-card {
+    background: linear-gradient(135deg, rgba(243,232,255,1) 0%, rgba(250,245,255,0.4) 100%);
+    border-radius: 16px;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(143, 87, 255, 0.1);
+}
+.hero-bg-shapes {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(143,87,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.hero-content {
+    padding: 2rem 2rem 0 2rem;
+    display: flex;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+}
+.hero-avatar-wrapper {
+    position: relative;
+}
+.hero-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 8px 16px rgba(143,87,255,0.15);
+}
+.hero-avatar-edit {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    color: var(--accent-violet);
+    cursor: pointer;
+    border: 1px solid var(--card-border);
+}
+.hero-avatar-edit svg { width: 14px; height: 14px; }
+
+.hero-details {
+    flex: 1;
+    padding-top: 0.5rem;
+}
+.hero-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+.hero-name-row h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    color: var(--text-dark);
+}
+.student-badge {
+    background: rgba(143,87,255,0.1);
+    color: var(--accent-violet);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.hero-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+}
+.hero-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+.hero-info-item svg {
+    width: 16px;
+    height: 16px;
+    color: #9CA3AF;
+}
+.hero-quote {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    font-style: italic;
+    font-weight: 500;
+}
+.hero-quote span {
+    color: var(--accent-violet);
+    font-weight: 700;
+    font-style: normal;
+}
+.hero-edit-btn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    border: 1px solid var(--card-border);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-violet);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.hero-edit-btn svg { width: 14px; height: 14px; }
+
+/* Tabs */
+.hero-tabs {
+    display: flex;
+    gap: 2rem;
+    padding: 0 2rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+.hero-tab {
+    padding: 1rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    position: relative;
+}
+.hero-tab.active {
+    color: var(--accent-violet);
+}
+.hero-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--accent-violet);
+    border-radius: 3px 3px 0 0;
+}
+
+/* Content Sections */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    color: var(--text-dark);
+}
+.section-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-violet);
+}
+.action-btn {
+    background: white;
+    border: 1px solid var(--card-border);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent-violet);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.action-btn svg { width: 12px; height: 12px; }
+
+/* About Me */
+.about-text {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Skills */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+.skill-card {
+    background: #F9FAFB;
+    border: 1px solid #F3F4F6;
+    border-radius: 10px;
+    padding: 12px;
+}
+.skill-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+.skill-level {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.skill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+.skill-dot.green { background: #10B981; }
+.skill-dot.blue { background: #3B82F6; }
+
+/* Interests */
+.interests-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.interest-pill {
+    background: rgba(143,87,255,0.08);
+    color: var(--accent-violet);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Social Links */
+.social-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: white;
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.social-btn:hover {
+    border-color: var(--accent-violet);
+    color: var(--accent-violet);
+}
+.social-btn svg {
+    width: 16px;
+    height: 16px;
+    color: #4B5563;
+}
+
+/* Right Column Widgets */
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+.summary-label {
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.summary-label svg {
+    width: 14px;
+    height: 14px;
+}
+.summary-value {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+.summary-value.highlight {
+    color: var(--accent-violet);
+}
+
+/* Learning Stats */
+.stats-flex {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+.donut-chart {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    /* Colors: Purple 72%, Blue 18% (so up to 90%), Gray 10% */
+    background: conic-gradient(#8F57FF 0% 72%, #3B82F6 72% 90%, #E5E7EB 90% 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.donut-inner {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.donut-inner h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+}
+.donut-inner span {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    text-align: center;
+    line-height: 1.2;
+}
+.legend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+.legend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+}
+.legend-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+}
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+.legend-dot.purple { background: #8F57FF; }
+.legend-dot.blue { background: #3B82F6; }
+.legend-dot.gray { background: #E5E7EB; }
+.legend-value {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+.full-width-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--accent-violet);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.full-width-btn:hover {
+    background: rgba(143,87,255,0.02);
+}
+
+/* Recent Badges */
+.header-link {
+    font-size: 0.8rem;
+    color: var(--accent-violet);
+    font-weight: 600;
+    text-decoration: none;
+}
+.mini-badges-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+.mini-badge {
+    width: 50px;
+    height: 50px;
+}
+.badges-stats-row {
+    display: flex;
+    border-top: 1px solid var(--card-border);
+    padding-top: 1.25rem;
+}
+.badge-stat-col {
+    flex: 1;
+    text-align: center;
+}
+.badge-stat-col:first-child {
+    border-right: 1px solid var(--card-border);
+}
+.badge-stat-col h4 {
+    margin: 0 0 4px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-violet);
+}
+.badge-stat-col p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <div class="profile-page-header">
+        <h1>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Profile
+        </h1>
+        <p>Manage your personal information and preferences.</p>
+    </div>
+
+    <div class="profile-layout">
+        
+        <!-- Left Column -->
+        <div>
+            <!-- Hero Card -->
+            <div class="hero-card">
+                <div class="hero-bg-shapes"></div>
+                <button class="hero-edit-btn" id="editProfileBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Edit Profile
+                </button>
+                
+                <div class="hero-content">
+                    <div class="hero-avatar-wrapper">
+                        {% with full_name=user.get_full_name|default:user.username %}
+                        {% with initials=full_name|slice:":1" %}
+                        <div class="hero-avatar initials">
+                            {{ full_name|slice:":1" }}{% if user.last_name %}{{ user.last_name|slice:":1" }}{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% endwith %}
+                        <div class="hero-avatar-edit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-details">
+                        <div class="hero-name-row">
+                            <h2>{{ user.get_full_name|default:user.username }}</h2>
+                            {% if profile and profile.current_status %}
+                            <span class="student-badge">{{ profile.current_status }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="hero-info-list">
+                            {% if user.email %}
+                            <div class="hero-info-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                                {{ user.email }}
+                            </div>
+                            {% endif %}
+                            {% if user.location %}
+                            <div class="hero-info-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {{ user.location }}
+                            </div>
+                            {% endif %}
+                            {% if profile and profile.education_level %}
+                            <div class="hero-info-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5L12 2z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                                {{ profile.education_level }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if profile and profile.resume_text %}
+                        <div class="hero-quote">
+                            <span>❝</span> {{ profile.resume_text }}
+                        </div>
+                        {% elif profile and profile.dream_role %}
+                        <div class="hero-quote">
+                            <span>❝</span> Aspiring {{ profile.dream_role }}.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="hero-tabs">
+                    <div class="hero-tab active">Overview</div>
+                    <div class="hero-tab">Personal Info</div>
+                    <div class="hero-tab">Education</div>
+                    <div class="hero-tab">Preferences</div>
+                    <div class="hero-tab">Security</div>
+                </div>
+            </div>
+
+            <!-- About Me -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        About Me
+                    </div>
+                    <button class="action-btn" id="editAboutBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        Edit
+                    </button>
+                </div>
+                <p class="about-text">
+                    {% if profile and profile.resume_text %}
+                        {{ profile.resume_text }}
+                    {% else %}
+                        Tell us more about yourself so your profile shows real details here.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Skills -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Skills
+                    </div>
+                    <button class="action-btn" id="editSkillsBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        Manage Skills
+                    </button>
+                </div>
+                <div class="skills-grid">
+                    {% if profile and profile.technical_skills %}
+                        {% for skill_item in profile.technical_skills %}
+                            {% if skill_item.skill %}
+                                <div class="skill-card">
+                                    <div class="skill-name">{{ skill_item.skill }}</div>
+                                    <div class="skill-level"><span class="skill-dot {% if skill_item.proficiency == 'Advanced' %}green{% else %}blue{% endif %}"></span> {{ skill_item.proficiency|default:'Intermediate' }}</div>
+                                </div>
+                            {% else %}
+                                <div class="skill-card">
+                                    <div class="skill-name">{{ skill_item }}</div>
+                                    <div class="skill-level"><span class="skill-dot blue"></span> Intermediate</div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-state">No skills added yet. Add your technical skills to make this section real.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Interests -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        Interests
+                    </div>
+                </div>
+                <div class="interests-flex">
+                    {% if profile and profile.interests %}
+                        {% for interest in profile.interests %}
+                            <div class="interest-pill">{{ interest }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-state">No interests added yet. Add interests to display them here.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            
+        </div>
+        
+        <!-- Right Column -->
+        <div>
+            <!-- Profile Summary -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Profile Summary
+                    </div>
+                </div>
+                <div class="summary-list">
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5.5"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                            Member Since
+                        </div>
+                        <div class="summary-value">{{ user.date_joined|date:'M d, Y' }}</div>
+                    </div>
+                    {% if profile and profile.preferred_work_type %}
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Current Plan
+                        </div>
+                        <div class="summary-value">{{ profile.preferred_work_type }}</div>
+                    </div>
+                    {% endif %}
+                    {% if stats %}
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c-2.28 0-3-1.62-3-3a3 3 0 0 1 3-3c-1.34 3 2.14 3.93 2.14 7a2.5 2.5 0 1 1-4.64 1.5"/><path d="M12 22a8 8 0 1 1 8-8c0 3.33-2.18 5-4.5 5S12 18 12 18s-1.18 1-3.5 1A4.5 4.5 0 0 1 4 14.5c0-3.3 2-6.5 4-8.5"/></svg>
+                            Learning Streak
+                        </div>
+                        <div class="summary-value">{{ stats.day_streak }} days</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Profile Progress
+                        </div>
+                        <div class="summary-value highlight">{{ stats.profile_progress }}%</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                            Career Readiness
+                        </div>
+                        <div class="summary-value highlight">{{ stats.career_readiness }}%</div>
+                    </div>
+                    {% if stats.ai_score %}
+                    <div class="summary-item">
+                        <div class="summary-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 9h6v6H9z"/></svg>
+                            AI Score
+                        </div>
+                        <div class="summary-value highlight">{{ stats.ai_score }}%</div>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Learning Stats -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        Learning Stats
+                    </div>
+                </div>
+                
+                {% if stats %}
+                <div class="stats-flex">
+                    <div class="donut-chart">
+                        <div class="donut-inner">
+                            <h3>{{ stats.profile_progress }}%</h3>
+                            <span>Overall<br>Progress</span>
+                        </div>
+                    </div>
+                    <div class="legend-list">
+                        <div class="legend-item">
+                            <div class="legend-label"><span class="legend-dot purple"></span> Career Readiness</div>
+                            <div class="legend-value">{{ stats.career_readiness }}%</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-label"><span class="legend-dot blue"></span> Skills Strength</div>
+                            <div class="legend-value">{{ stats.skills_strength }}%</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-label"><span class="legend-dot gray"></span> AI Score</div>
+                            <div class="legend-value">{{ stats.ai_score }}%</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="empty-state">No learning progress data is available yet.</p>
+                {% endif %}
+                
+                <a href="#" class="full-width-btn">View Full Progress &rarr;</a>
+            </div>
+
+            <!-- Recent Badges -->
+            <div class="profile-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22.5 12 19 4 22.5 4 12"/><path d="M12 15a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11Z"/></svg>
+                        Recent Badges
+                    </div>
+                    <a href="#" class="header-link">View All &gt;</a>
+                </div>
+                
+                <div class="mini-badges-row">
+                    <!-- Badge 1: Star -->
+                    <div class="mini-badge">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#pgrad1)"/>
+                            <path d="M50 35L54.5 44H64.5L56.5 50L59.5 59L50 53.5L40.5 59L43.5 50L35.5 44H45.5L50 35Z" fill="white"/>
+                            <defs>
+                                <linearGradient id="pgrad1" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#8F57FF"/><stop offset="1" stop-color="#693AE9"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <!-- Badge 2: Book -->
+                    <div class="mini-badge">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#pgrad2)"/>
+                            <path d="M35 45V60M65 45V60M35 45C35 45 42 42 50 48C58 42 65 45 65 45M35 45V35C35 35 42 32 50 38C58 32 65 35 65 35V45" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M50 38V48V58" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="pgrad2" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#3B82F6"/><stop offset="1" stop-color="#2563EB"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <!-- Badge 3: Target -->
+                    <div class="mini-badge">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#pgrad3)"/>
+                            <circle cx="50" cy="50" r="15" stroke="white" stroke-width="4"/>
+                            <circle cx="50" cy="50" r="7" fill="white"/>
+                            <path d="M60 40L70 30" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="pgrad3" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#10B981"/><stop offset="1" stop-color="#059669"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <!-- Badge 4: Code -->
+                    <div class="mini-badge">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#pgrad4)"/>
+                            <path d="M42 38L32 50L42 62M58 38L68 50L58 62" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M53 33L47 67" stroke="white" stroke-width="4" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="pgrad4" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#F59E0B"/><stop offset="1" stop-color="#D97706"/>
+                                </linear.Gradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="badges-stats-row">
+                    <div class="badge-stat-col">
+                        <h4>+{{ achievements_count }}</h4>
+                        <p>Badges Earned</p>
+                    </div>
+                    {% if stats and stats.ai_score %}
+                    <div class="badge-stat-col">
+                        <h4>{{ stats.ai_score }}</h4>
+                        <p>AI Score</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            
+        </div>
+        
+    </div>
+</div>
+
+<!-- Edit Modals -->
+<div id="profileEditModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px; max-height:90vh; overflow-y:auto;">
+        <h3>Edit Profile</h3>
+        <form id="editProfileForm">
+            {% csrf_token %}
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">First Name</label>
+                <input type="text" id="editFirstName" value="{{ user.first_name }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Last Name</label>
+                <input type="text" id="editLastName" value="{{ user.last_name }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Location</label>
+                <input type="text" id="editLocation" value="{{ user.location }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Current Status</label>
+                <input type="text" id="editStatus" value="{{ profile.current_status }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Education Level</label>
+                <input type="text" id="editEducation" value="{{ profile.education_level }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Dream Role</label>
+                <input type="text" id="editRole" value="{{ profile.dream_role }}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="document.getElementById('profileEditModal').style.display='none'" style="padding:8px 16px; border:1px solid #ccc; border-radius:6px; background:white; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:8px 16px; background:var(--accent-violet); color:white; border:none; border-radius:6px; cursor:pointer;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="aboutEditModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px;">
+        <h3>Edit About Me</h3>
+        <form id="editAboutForm">
+            {% csrf_token %}
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">About You</label>
+                <textarea id="editAboutText" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; height:120px;">{{ profile.resume_text }}</textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="document.getElementById('aboutEditModal').style.display='none'" style="padding:8px 16px; border:1px solid #ccc; border-radius:6px; background:white; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:8px 16px; background:var(--accent-violet); color:white; border:none; border-radius:6px; cursor:pointer;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="skillsEditModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px;">
+        <h3>Manage Skills</h3>
+        <form id="editSkillsForm">
+            {% csrf_token %}
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; margin-bottom:0.5rem; font-weight:600;">Skills (comma separated)</label>
+                <textarea id="editSkillsText" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; height:100px;">{% for s in profile.technical_skills %}{% if s.skill %}{{ s.skill }}{% else %}{{ s }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="document.getElementById('skillsEditModal').style.display='none'" style="padding:8px 16px; border:1px solid #ccc; border-radius:6px; background:white; cursor:pointer;">Cancel</button>
+                <button type="submit" style="padding:8px 16px; background:var(--accent-violet); color:white; border:none; border-radius:6px; cursor:pointer;">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Buttons
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const editAboutBtn = document.getElementById('editAboutBtn');
+    const editSkillsBtn = document.getElementById('editSkillsBtn');
+    
+    // Modals
+    const profileEditModal = document.getElementById('profileEditModal');
+    const aboutEditModal = document.getElementById('aboutEditModal');
+    const skillsEditModal = document.getElementById('skillsEditModal');
+    
+    if (editProfileBtn) editProfileBtn.addEventListener('click', () => profileEditModal.style.display = 'flex');
+    if (editAboutBtn) editAboutBtn.addEventListener('click', () => aboutEditModal.style.display = 'flex');
+    if (editSkillsBtn) editSkillsBtn.addEventListener('click', () => skillsEditModal.style.display = 'flex');
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    async function submitUpdate(data, modalId) {
+        try {
+            const res = await fetch("{% url 'accounts:profile_update' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (result.status === 'success') {
+                document.getElementById(modalId).style.display = 'none';
+                window.location.reload();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (e) {
+            alert('Failed to update: ' + e);
+        }
+    }
+    
+    const pForm = document.getElementById('editProfileForm');
+    if (pForm) {
+        pForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitUpdate({
+                action: 'basic_info',
+                first_name: document.getElementById('editFirstName').value,
+                last_name: document.getElementById('editLastName').value,
+                location: document.getElementById('editLocation').value,
+                current_status: document.getElementById('editStatus').value,
+                education_level: document.getElementById('editEducation').value,
+                dream_role: document.getElementById('editRole').value
+            }, 'profileEditModal');
+        });
+    }
+    
+    const aForm = document.getElementById('editAboutForm');
+    if (aForm) {
+        aForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitUpdate({
+                action: 'about_me',
+                resume_text: document.getElementById('editAboutText').value
+            }, 'aboutEditModal');
+        });
+    }
+    
+    const sForm = document.getElementById('editSkillsForm');
+    if (sForm) {
+        sForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitUpdate({
+                action: 'skills',
+                skills: document.getElementById('editSkillsText').value
+            }, 'skillsEditModal');
+        });
+    }
+});
+</script>
+{% endblock %}

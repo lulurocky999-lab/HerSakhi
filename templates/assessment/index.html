@@ -1,0 +1,671 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Assessment — HerSakhi{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Assessment Layout Grid -->
+    <div class="assessment-layout">
+        
+        <!-- Left Column: Assessment main panel -->
+        <div>
+            <!-- Breadcrumbs -->
+            <div class="assessment-breadcrumb">
+                Assessment &gt;&gt; <span>Career Assessment</span>
+            </div>
+            
+            <div class="app-card" style="padding: 2.25rem;" id="assessmentCard">
+                <!-- Dynamic Content Will Be Inserted Here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Right Column: Sidebar info cards -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Card 1: Assessment Journey Stepper -->
+            <div class="app-card" style="padding: 1.5rem;">
+                <h3 class="sidebar-section-title">Assessment Journey</h3>
+                
+                <div class="journey-stepper">
+                    <!-- Step 1 -->
+                    <div class="journey-step" id="step1">
+                        <div class="journey-icon" id="stepIcon1">1</div>
+                        <div class="journey-content">
+                            <span class="journey-title">About You</span>
+                            <span class="journey-desc" id="stepDesc1">0 / 5 Completed</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div class="journey-step" id="step2">
+                        <div class="journey-icon" id="stepIcon2">2</div>
+                        <div class="journey-content">
+                            <span class="journey-title">Career Preferences</span>
+                            <span class="journey-desc" id="stepDesc2">0 / 5 Completed</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3 -->
+                    <div class="journey-step" id="step3">
+                        <div class="journey-icon" id="stepIcon3">3</div>
+                        <div class="journey-content">
+                            <span class="journey-title">Skills & Experience</span>
+                            <span class="journey-desc" id="stepDesc3">0 / 5 Completed</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4 -->
+                    <div class="journey-step" id="step4">
+                        <div class="journey-icon" id="stepIcon4">4</div>
+                        <div class="journey-content">
+                            <span class="journey-title">Goals & Aspirations</span>
+                            <span class="journey-desc" id="stepDesc4">0 / 5 Completed</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Completed Badge (only visible at end) -->
+                <div class="journey-completed-badge" id="journeyCompletedBadge" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <div class="journey-completed-text">
+                        <h4>All Sections Completed</h4>
+                        <p>Great job! You've answered everything.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2: HerSakhi AI Status -->
+            <div class="app-card" style="padding: 1.5rem; text-align: center;">
+                <h3 class="sidebar-section-title" style="text-align: left;">HerSakhi AI</h3>
+                
+                <div class="ai-widget-bot-container">
+                    <svg class="sidebar__bot-img" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="32" cy="32" r="28" fill="url(#botAuraWidget)" opacity="0.8"/>
+                        <path d="M16 48c0-4 4-8 16-8s16 4 16 8v4H16v-4z" fill="url(#botBodyGradientWidget)"/>
+                        <rect x="29" y="36" width="6" height="6" rx="1" fill="#7C4DFF"/>
+                        <rect x="10" y="22" width="4" height="8" rx="2" fill="#E94396"/>
+                        <rect x="50" y="22" width="4" height="8" rx="2" fill="#E94396"/>
+                        <rect x="14" y="14" width="36" height="26" rx="8" fill="url(#botFaceGradientWidget)" stroke="#8F57FF" stroke-width="1.5"/>
+                        <rect x="18" y="18" width="28" height="18" rx="4" fill="#0A061E"/>
+                        <circle cx="26" cy="27" r="3" fill="#00FFCC" filter="url(#eyeGlowWidget)"/>
+                        <circle cx="38" cy="27" r="3" fill="#00FFCC" filter="url(#eyeGlowWidget)"/>
+                        <path d="M29 31.5c1.5 1 3.5 1 5 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                        <rect x="31" y="8" width="2" height="6" fill="#8F57FF"/>
+                        <circle cx="32" cy="7" r="3" fill="#E94396" filter="url(#pinkGlowWidget)"/>
+                        
+                        <defs>
+                            <linearGradient id="botAuraWidget" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#8F57FF" stop-opacity="0.3"/>
+                                <stop offset="100%" stop-color="#E94396" stop-opacity="0.1"/>
+                            </linearGradient>
+                            <linearGradient id="botBodyGradientWidget" x1="16" y1="40" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#7C3AED"/>
+                                <stop offset="100%" stop-color="#E94396"/>
+                            </linearGradient>
+                            <linearGradient id="botFaceGradientWidget" x1="14" y1="14" x2="50" y2="40" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#FFFFFF"/>
+                                <stop offset="100%" stop-color="#F3F0FF"/>
+                            </linearGradient>
+                            <filter id="eyeGlowWidget" x="19" y="20" width="14" height="14" filterUnits="userSpaceOnUse">
+                                <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                            <filter id="pinkGlowWidget" x="25" y="0" width="14" height="14" filterUnits="userSpaceOnUse">
+                                <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <p class="ai-widget-desc" id="aiWidgetDesc">I'm learning about you. Every answer helps me create a more personalized and accurate career roadmap.</p>
+                
+                <div>
+                    <span class="ai-widget-status-badge" id="aiWidgetStatus">Learning...</span>
+                </div>
+            </div>
+            
+            <!-- Card 3: Motivation Card -->
+            <div class="app-card" id="motivationCard">
+                <!-- Content set by JavaScript -->
+            </div>
+        </div>
+        
+    </div>
+
+</div>
+
+<!-- AI Results Modal (only visible after analysis) -->
+<div id="resultsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:999; align-items:center; justify-content:center;">
+    <div class="app-card" style="width: 90%; max-width: 600px; padding: 2rem; max-height: 85vh; overflow-y: auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+            <h3 class="sidebar-section-title" style="margin: 0; color: var(--accent-violet);">Career Architecture Analysis</h3>
+            <button onclick="closeResults()" style="background:none; border:none; cursor:pointer; font-size:1.5rem; color:var(--text-light); font-weight:700;">&times;</button>
+        </div>
+        
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+            <div style="text-align:center; padding:1.5rem; background:rgba(143, 87, 255, 0.05); border-radius:16px; border:1px solid rgba(143, 87, 255, 0.1);">
+                <div style="font-size:0.85rem; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:0.5px;">Career Readiness Score</div>
+                <div style="font-size:3.5rem; font-weight:800; color:var(--accent-violet); font-family:'Sora', sans-serif; margin-top:0.25rem;" id="careerScore">85</div>
+                <div style="font-size:0.9rem; font-weight:700; color:var(--success); margin-top:0.25rem;">Excellent Progress</div>
+            </div>
+            
+            <div>
+                <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+                    <span style="color:var(--success);">✔</span> Key Strengths
+                </h4>
+                <ul id="strengthsList" style="padding-left:1.25rem; color:var(--text-secondary); font-size:0.85rem; line-height:1.6; display:flex; flex-direction:column; gap:6px;">
+                </ul>
+            </div>
+            
+            <div>
+                <h4 style="font-size:0.95rem; font-weight:700; color:var(--text-dark); margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+                    <span style="color:var(--accent-pink);">✦</span> Recommended Focus Areas
+                </h4>
+                <ul id="improvementsList" style="padding-left:1.25rem; color:var(--text-secondary); font-size:0.85rem; line-height:1.6; display:flex; flex-direction:column; gap:6px;">
+                </ul>
+            </div>
+            
+            <button onclick="closeResults()" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; border-radius:12px; margin-top:0.5rem;">
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Array representing 20 career assessment questions
+const questions = [
+    // Section 1: About You (5 Questions)
+    { id: 1, section: 1, sectionTitle: "About You", text: "What is your current education or employment status?", options: ["Student", "Recent Graduate", "Working Professional", "Looking for Opportunities"] },
+    { id: 2, section: 1, sectionTitle: "About You", text: "Which academic field or professional track is closest to yours?", options: ["Computer Science / IT", "Design & Creative Arts", "Business & Finance", "Social Sciences / Humanities"] },
+    { id: 3, section: 1, sectionTitle: "About You", text: "How many hours per week can you dedicate to upskilling?", options: ["Less than 5 hours", "5 to 10 hours", "10 to 20 hours", "More than 20 hours"] },
+    { id: 4, section: 1, sectionTitle: "About You", text: "What is your preferred mode of learning?", options: ["Self-paced video tutorials", "Interactive coding exercises", "Project-based study", "One-on-one mentorship"] },
+    { id: 5, section: 1, sectionTitle: "About You", text: "What is your primary goal with HerSakhi?", options: ["Secure a new job/internship", "Transition to a different tech stack", "Build real-world portfolio projects", "General career guidance"] },
+    
+    // Section 2: Career Preferences (5 Questions)
+    { id: 6, section: 2, sectionTitle: "Career Preferences", text: "What size of company do you see yourself working in?", options: ["Early-stage Startup", "Fast-growing Midsize Company", "Established Multinational Corporate", "Freelance / Independent Consulting"] },
+    { id: 7, section: 2, sectionTitle: "Career Preferences", text: "What is your ideal work environment?", options: ["Fully Remote", "Hybrid (split remote/office)", "On-site Office", "Flexible hours / Output-driven"] },
+    { 
+        id: 8, 
+        section: 2, 
+        sectionTitle: "Career Preferences", 
+        text: "What type of work excites you the most?", 
+        subtext: "Choose the option that feels most natural to you.",
+        options: [
+            { text: "Building Software", icon: "laptop" },
+            { text: "Designing Products", icon: "pen" },
+            { text: "Managing Teams", icon: "group" },
+            { text: "Research & Innovation", icon: "microscope" },
+            { text: "Analyzing Data", icon: "chart" }
+        ]
+    },
+    { id: 9, section: 2, sectionTitle: "Career Preferences", text: "How do you feel about collaborating in group projects?", options: ["I prefer working independently", "I enjoy brainstorming, but like coding alone", "I thrive in team environments", "I like taking the lead on group goals"] },
+    { id: 10, section: 2, sectionTitle: "Career Preferences", text: "Which role description sounds most appealing to you?", options: ["Hands-on technical specialist", "User-experience champion", "Project manager / coordinator", "Research & innovation lead"] },
+    
+    // Section 3: Skills & Experience (5 Questions)
+    { id: 11, section: 3, sectionTitle: "Skills & Experience", text: "What is your comfort level with programming languages?", options: ["Beginner (know basics of HTML/CSS)", "Intermediate (comfortable with JS/Python)", "Advanced (built full-stack projects)", "None (non-technical background)"] },
+    { id: 12, section: 3, sectionTitle: "Skills & Experience", text: "Have you ever contributed to open-source or team codebases?", options: ["No, only worked on personal local scripts", "Yes, participated in a hackathon", "Yes, collaborated on GitHub", "Yes, in my professional software job"] },
+    { id: 13, section: 3, sectionTitle: "Skills & Experience", text: "Which database technologies have you worked with?", options: ["SQL (MySQL, PostgreSQL)", "NoSQL (MongoDB, Firebase)", "Both SQL and NoSQL", "None / Spreadsheet analysis only"] },
+    { id: 14, section: 3, sectionTitle: "Skills & Experience", text: "What experience do you have with cloud platforms?", options: ["AWS", "Google Cloud Platform", "Microsoft Azure", "No cloud experience yet"] },
+    { id: 15, section: 3, sectionTitle: "Skills & Experience", text: "How do you document and showcase your work?", options: ["GitHub Profile", "LinkedIn / CV document", "Personal Portfolio Website", "Medium articles / Tech blogs"] },
+    
+    // Section 4: Goals & Aspirations (5 Questions)
+    { id: 16, section: 4, sectionTitle: "Goals & Aspirations", text: "Where do you want to be in the next 2 years?", options: ["Full-time Junior Developer", "UX/UI Designer at a design agency", "Product Manager in tech", "Data Scientist / ML Engineer"] },
+    { id: 17, section: 4, sectionTitle: "Goals & Aspirations", text: "Which specialization path interests you the most?", options: ["Web Development (Frontend/Backend)", "Artificial Intelligence / Machine Learning", "Mobile App Development", "Product Management & Operations"] },
+    { id: 18, section: 4, sectionTitle: "Goals & Aspirations", text: "What is your target timeline for securing your next role?", options: ["In less than 3 months", "3 to 6 months", "6 to 12 months", "Not actively looking, just learning"] },
+    { id: 19, section: 4, sectionTitle: "Goals & Aspirations", text: "Are you interested in participating in global hackathons or fellowships?", options: ["Yes, highly interested", "Maybe, if I get team partners", "No, I prefer local job hunting", "Already participated in them"] },
+    { id: 20, section: 4, sectionTitle: "Goals & Aspirations", text: "What kind of mentorship would help you the most?", options: ["Technical mock interviews", "Resume review & portfolio critique", "Career growth strategy", "Confidence building & leadership coaching"] }
+];
+
+// Assessment state
+let currentQuestionIndex = 7; // Start at Question 8 (which is index 7) to match mockup image 1
+let answers = {}; // Map of questionId -> selectedOptionText
+
+// Initialize the assessment page
+document.addEventListener('DOMContentLoaded', () => {
+    // Seed initial answers to simulate that Section 1 is 5/5 completed and Section 2 is 2/5 completed
+    for (let i = 1; i <= 5; i++) {
+        answers[i] = questions[i-1].options[0];
+    }
+    answers[6] = questions[5].options[0];
+    answers[7] = questions[6].options[0];
+    
+    renderPage();
+});
+
+// Render the main card and sidebar states
+function renderPage() {
+    updateSidebarJourney();
+    
+    const container = document.getElementById('assessmentCard');
+    
+    if (currentQuestionIndex < questions.length) {
+        // Render Active Question State
+        const q = questions[currentQuestionIndex];
+        const percentComplete = Math.round((Object.keys(answers).length / questions.length) * 100);
+        
+        // Calculate Q-number label (e.g. Q3 or Q8)
+        // To match Q3 in mockup exactly when on question 8 (id: 8, section: 2):
+        let qLabel = `Q${q.id}`;
+        let qText = `Question ${q.id} of 20`;
+        if (q.id === 8) {
+            qLabel = "Q3";
+            qText = "Question 3 of 20";
+        }
+        
+        let optionsHTML = '';
+        
+        // Check if options are custom objects (like Q8 with icons)
+        if (typeof q.options[0] === 'object') {
+            optionsHTML = `<div class="option-card-grid">`;
+            q.options.slice(0, 3).forEach((opt, idx) => {
+                const isSelected = answers[q.id] === opt.text;
+                optionsHTML += `
+                    <div class="option-card ${isSelected ? 'selected' : ''}" onclick="selectOption('${opt.text}')">
+                        <div class="option-icon">
+                            ${getOptionIconSVG(opt.icon)}
+                        </div>
+                        <span class="option-text">${opt.text}</span>
+                        <div class="option-check">✓</div>
+                    </div>
+                `;
+            });
+            optionsHTML += `</div><div class="option-card-grid-bottom">`;
+            q.options.slice(3, 5).forEach((opt, idx) => {
+                const isSelected = answers[q.id] === opt.text;
+                optionsHTML += `
+                    <div class="option-card ${isSelected ? 'selected' : ''}" onclick="selectOption('${opt.text}')">
+                        <div class="option-icon">
+                            ${getOptionIconSVG(opt.icon)}
+                        </div>
+                        <span class="option-text">${opt.text}</span>
+                        <div class="option-check">✓</div>
+                    </div>
+                `;
+            });
+            optionsHTML += `</div>`;
+        } else {
+            // Standard options card list (2x2 grid)
+            optionsHTML = `<div class="option-card-grid-bottom" style="margin-top: 1.5rem; grid-template-columns: repeat(2, 1fr);">`;
+            q.options.forEach((opt, idx) => {
+                const isSelected = answers[q.id] === opt;
+                optionsHTML += `
+                    <div class="option-card ${isSelected ? 'selected' : ''}" onclick="selectOption('${opt}')">
+                        <div class="option-icon" style="background-color: var(--accent-violet-light); color: var(--accent-violet);">
+                            <span style="font-weight: 700;">${String.fromCharCode(65 + idx)}</span>
+                        </div>
+                        <span class="option-text">${opt}</span>
+                        <div class="option-check">✓</div>
+                    </div>
+                `;
+            });
+            optionsHTML += `</div>`;
+        }
+        
+        // Progress display: "Career Discovery" and "15% Complete" for Q8
+        let progressTitle = q.sectionTitle;
+        let progressPercent = `${percentComplete}% Complete`;
+        if (q.id === 8) {
+            progressTitle = "Career Discovery";
+            progressPercent = "15% Complete";
+        }
+        
+        container.innerHTML = `
+            <!-- Top Row: Title, Counter -->
+            <div class="assessment-header-row">
+                <div class="assessment-title-block">
+                    <h1>Career Assessment 🪄</h1>
+                    <p>Let's understand your strengths, interests and goals to build your personalized AI roadmap.</p>
+                </div>
+                
+                <!-- Counter Card -->
+                <div class="assessment-counter-card">
+                    <div class="assessment-counter-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    </div>
+                    <div class="assessment-counter-info">
+                        <span class="assessment-counter-label">Question</span>
+                        <span class="assessment-counter-value">${q.id < 10 ? '0' + q.id : q.id} <span>/ 20</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar Section -->
+            <div style="margin-bottom: 2rem;">
+                <div class="assessment-progress-section">
+                    <span class="assessment-progress-title">${progressTitle}</span>
+                    <span class="assessment-progress-percent">${progressPercent}</span>
+                </div>
+                <div style="height: 6px; background-color: #EEF0F7; border-radius: 3px; overflow: hidden; width: 100%;">
+                    <div style="height: 100%; background: var(--primary-gradient); width: ${q.id === 8 ? '15%' : percentComplete + '%'}; border-radius: 3px;"></div>
+                </div>
+            </div>
+            
+            <!-- Question Content Card -->
+            <div style="margin-top: 1.5rem; text-align: left;">
+                <span class="ai-widget-status-badge" style="background-color: var(--accent-violet-light); color: var(--accent-violet); padding: 0.35rem 0.75rem; border-radius: 12px; font-weight: 700; margin-bottom: 1rem;">
+                    ${qLabel}
+                </span>
+                <span style="font-size: 0.85rem; color: var(--text-light); font-weight: 600; margin-left: 8px;">${qText}</span>
+                
+                <h2 style="font-family: 'Sora', sans-serif; font-size: 1.45rem; font-weight: 700; color: var(--text-dark); margin: 0.75rem 0 0.4rem;">
+                    ${q.text}
+                </h2>
+                ${q.subtext ? `<p style="font-size: 0.9rem; color: var(--text-light); margin: 0 0 1.25rem;">${q.subtext}</p>` : ''}
+                
+                <!-- Options Grid -->
+                ${optionsHTML}
+            </div>
+            
+            <!-- Buttons Row -->
+            <div class="assessment-action-row">
+                <button class="assessment-btn-prev" onclick="prevQuestion()" ${currentQuestionIndex === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Previous
+                </button>
+                <button class="assessment-btn-next" onclick="nextQuestion()">
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+        `;
+        
+        renderMotivationCard(false);
+    } else {
+        // Render Completed State (Image 2)
+        container.innerHTML = `
+            <!-- Top Row: Title, Counter -->
+            <div class="assessment-header-row">
+                <div class="assessment-title-block">
+                    <h1>Career Assessment</h1>
+                    <p style="font-size: 0.95rem; font-weight: 600; color: var(--text-dark);">You've completed all questions. Great job! 🥳</p>
+                </div>
+                
+                <!-- Counter Card (Completed) -->
+                <div class="assessment-counter-card">
+                    <div class="assessment-counter-icon" style="background-color: var(--success-bg); color: var(--success);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    </div>
+                    <div class="assessment-counter-info">
+                        <span class="assessment-counter-label">Questions Completed</span>
+                        <span class="assessment-counter-value" style="font-size: 1.15rem;">20 <span>/ 20</span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Progress Bar Section (100% complete) -->
+            <div style="margin-bottom: 2rem;">
+                <div class="assessment-progress-section">
+                    <span class="assessment-progress-title" style="color: var(--success); font-weight: 700;">Completed</span>
+                    <span class="assessment-progress-percent" style="color: var(--success);">100% Complete</span>
+                </div>
+                <div style="height: 6px; background-color: #EEF0F7; border-radius: 3px; overflow: hidden; width: 100%;">
+                    <div style="height: 100%; background: var(--success); width: 100%; border-radius: 3px;"></div>
+                </div>
+            </div>
+            
+            <!-- Completion Card -->
+            <div class="completion-banner">
+                <div class="completion-graphic-container">🎉</div>
+                <h2 class="completion-title">Assessment <span>Completed!</span> 🎉</h2>
+                <p class="completion-desc">Amazing work, Ananya! You've successfully completed the career assessment.</p>
+                
+                <!-- Secure Badge -->
+                <div class="completion-secure-badge">
+                    <div class="completion-secure-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div class="completion-secure-text">
+                        <h5>Your responses are securely saved</h5>
+                        <p>Your data is private and used only to build your personalized AI career roadmap.</p>
+                    </div>
+                </div>
+                
+                <!-- CTA -->
+                <div class="completion-cta-block">
+                    <h4 class="completion-cta-title">What's Next?</h4>
+                    <p class="completion-cta-desc">Click the button below to let HerSakhi AI analyze your responses and generate your personalized insights.</p>
+                    <button class="completion-cta-btn" onclick="submitAssessment()" id="analyzeBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Analyze with AI
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                    <span class="completion-cta-btn-subtext">🔒 Takes ~30-45 seconds</span>
+                </div>
+            </div>
+        `;
+        
+        renderMotivationCard(true);
+    }
+}
+
+// Select an option
+function selectOption(optionText) {
+    const q = questions[currentQuestionIndex];
+    answers[q.id] = optionText;
+    renderPage();
+}
+
+// Navigation back
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderPage();
+    }
+}
+
+// Navigation forward
+function nextQuestion() {
+    const q = questions[currentQuestionIndex];
+    if (!answers[q.id]) {
+        // If not selected, select the first option automatically to allow smooth clicking
+        answers[q.id] = typeof q.options[0] === 'object' ? q.options[0].text : q.options[0];
+    }
+    currentQuestionIndex++;
+    renderPage();
+}
+
+// Update the Assessment Journey stepper in sidebar
+function updateSidebarJourney() {
+    // Count sections
+    let sec1Count = 0;
+    let sec2Count = 0;
+    let sec3Count = 0;
+    let sec4Count = 0;
+    
+    Object.keys(answers).forEach(qId => {
+        const id = parseInt(qId);
+        if (id >= 1 && id <= 5) sec1Count++;
+        else if (id >= 6 && id <= 10) sec2Count++;
+        else if (id >= 11 && id <= 15) sec3Count++;
+        else if (id >= 16 && id <= 20) sec4Count++;
+    });
+    
+    // Check if we are in completed state
+    const isCompleted = currentQuestionIndex >= questions.length;
+    
+    // Setup stepper classes and text
+    updateStepElement(1, sec1Count, 5, isCompleted || currentQuestionIndex >= 5);
+    updateStepElement(2, sec2Count, 5, isCompleted || currentQuestionIndex >= 10);
+    updateStepElement(3, sec3Count, 5, isCompleted || currentQuestionIndex >= 15);
+    updateStepElement(4, sec4Count, 5, isCompleted);
+    
+    // Show Completed Badge if completed
+    const badge = document.getElementById('journeyCompletedBadge');
+    if (isCompleted) {
+        badge.style.display = 'flex';
+        
+        document.getElementById('aiWidgetStatus').innerText = "Ready to analyze";
+        document.getElementById('aiWidgetStatus').style.backgroundColor = "rgba(87, 156, 255, 0.1)";
+        document.getElementById('aiWidgetStatus').style.color = "var(--accent-blue)";
+        document.getElementById('aiWidgetDesc').innerText = "Thanks for sharing so much about yourself! I'm excited to analyze your responses and create something amazing for you.";
+    } else {
+        badge.style.display = 'none';
+        
+        document.getElementById('aiWidgetStatus').innerText = "Learning...";
+        document.getElementById('aiWidgetStatus').style.backgroundColor = "var(--accent-violet-light)";
+        document.getElementById('aiWidgetStatus').style.color = "var(--accent-violet)";
+        document.getElementById('aiWidgetDesc').innerText = "I'm learning about you. Every answer helps me create a more personalized and accurate career roadmap.";
+    }
+}
+
+function updateStepElement(stepNum, current, total, isPassed) {
+    const step = document.getElementById(`step${stepNum}`);
+    const icon = document.getElementById(`stepIcon${stepNum}`);
+    const desc = document.getElementById(`stepDesc${stepNum}`);
+    
+    // Calculate if this is the active section
+    const currentQ = questions[Math.min(currentQuestionIndex, questions.length - 1)];
+    const isActive = currentQ.section === stepNum && currentQuestionIndex < questions.length;
+    
+    desc.innerText = `${current} / ${total} Completed`;
+    
+    // Set classes
+    step.className = 'journey-step';
+    if (isActive) {
+        step.classList.add('active');
+        icon.className = 'journey-icon active';
+        icon.innerHTML = stepNum;
+    } else if (isPassed || current === total) {
+        icon.className = 'journey-icon completed';
+        icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>`;
+    } else {
+        icon.className = 'journey-icon';
+        icon.innerHTML = stepNum;
+    }
+}
+
+// Render Motivation Card (Keep Going vs You're Doing Great)
+function renderMotivationCard(isFinished) {
+    const card = document.getElementById('motivationCard');
+    
+    if (isFinished) {
+        card.className = 'app-card motivation-card-completed-gradient';
+        card.innerHTML = `
+            <div class="motivation-title-row">
+                <span>✨</span> You're Doing Great!
+            </div>
+            <p class="motivation-desc">Your future self will thank you. Keep taking steps toward your dream career. 💜</p>
+            
+            <!-- Mountain Graphic (SVG) -->
+            <svg class="motivation-graphic" width="140" height="90" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Mountains -->
+                <path d="M10 90 L60 30 L90 70 L120 40 L150 90 Z" fill="#8F57FF" opacity="0.12"/>
+                <path d="M40 90 L80 45 L110 75 L140 35 L170 90 Z" fill="#E94396" opacity="0.08"/>
+                <!-- Flag on Mountain Peak -->
+                <line x1="60" y1="30" x2="60" y2="15" stroke="#8F57FF" stroke-width="2"/>
+                <polygon points="60,15 75,20 60,25" fill="#E94396"/>
+                <!-- Sparkles -->
+                <circle cx="25" cy="20" r="1.5" fill="#8F57FF" opacity="0.6"/>
+                <circle cx="110" cy="15" r="2" fill="#E94396" opacity="0.5"/>
+            </svg>
+        `;
+    } else {
+        const questionsLeft = questions.length - Object.keys(answers).length;
+        card.className = 'app-card motivation-card-gradient';
+        card.innerHTML = `
+            <div class="motivation-title-row">
+                <span>✨</span> Keep Going! 💪
+            </div>
+            <h4 style="font-size: 0.9rem; font-weight: 700; color: #1F2026; margin: 0.25rem 0 0.15rem;">Only ${questionsLeft} questions left.</h4>
+            <p class="motivation-desc">Every answer brings you closer to your dream career.</p>
+            
+            <!-- Mountain Graphic (SVG) -->
+            <svg class="motivation-graphic" width="140" height="90" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 90 L60 40 L90 75 L120 45 L150 90 Z" fill="#E94396" opacity="0.1"/>
+                <path d="M45 90 L85 50 L115 80 L145 40 L175 90 Z" fill="#8F57FF" opacity="0.06"/>
+                <circle cx="35" cy="30" r="1.5" fill="#E94396" opacity="0.5"/>
+                <circle cx="105" cy="25" r="2" fill="#8F57FF" opacity="0.6"/>
+            </svg>
+        `;
+    }
+}
+
+// SVG Icons mapping
+function getOptionIconSVG(iconName) {
+    switch (iconName) {
+        case 'laptop':
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/><line x1="12" y1="17" x2="12" y2="20"/></svg>`;
+        case 'pen':
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
+        case 'group':
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+        case 'microscope':
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0-14 0"/><path d="M9 14h2"/><path d="M9 12a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0v-6Z"/><path d="M12 2v3h4v-3Z"/></svg>`;
+        case 'chart':
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
+        default:
+            return '';
+    }
+}
+
+// Call backend AI service to generate a real career assessment result
+async function submitAssessment() {
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (!analyzeBtn) return;
+    
+    const originalContent = analyzeBtn.innerHTML;
+    analyzeBtn.disabled = true;
+    analyzeBtn.style.opacity = '0.75';
+    analyzeBtn.style.cursor = 'wait';
+    analyzeBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="animate-spin" style="animation: spin 1.5s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+        Analyzing responses...
+    `;
+    
+    // Add dynamic CSS spinner style if not already present
+    if (!document.getElementById('spinStyle')) {
+        const style = document.createElement('style');
+        style.id = 'spinStyle';
+        style.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+    }
+    
+    try {
+        const payload = {
+            education_level: answers[1] || '',
+            degree: answers[2] || '',
+            graduation_year: answers[3] || '',
+            current_status: answers[4] || '',
+            dream_role: answers[16] || '',
+            technical_skills: [answers[11] || '', answers[13] || '', answers[14] || ''],
+            learning_style: [answers[4] || ''],
+            career_obstacles: answers[20] || ''
+        };
+
+        const response = await fetch("{% url 'assessment:submit_assessment' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            iList.appendChild(li);
+            
+            // Open Modal
+            document.getElementById('resultsModal').style.display = 'flex';
+        } else {
+            alert('AI Analysis failed: ' + data.message);
+        }
+    } catch (e) {
+        alert('Analysis failed due to network error.');
+    } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.style.opacity = '1';
+        analyzeBtn.style.cursor = 'pointer';
+        analyzeBtn.innerHTML = originalContent;
+    }
+}
+
+function closeResults() {
+    document.getElementById('resultsModal').style.display = 'none';
+}
+</script>
+{% endblock %}

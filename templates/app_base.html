@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HerSakhi App{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="app-layout">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <a href="{% url 'core:landing' %}">
+                <img src="{% static 'images/logo.png' %}" alt="HerSakhi">
+            </a>
+        </div>
+        
+        <nav class="sidebar__nav">
+            <a href="{% url 'dashboard:index' %}" class="nav-item {% if '/dashboard/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Dashboard
+            </a>
+            <a href="{% url 'assessment:index' %}" class="nav-item {% if '/assessment/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+                Assessment
+            </a>
+            <a href="{% url 'resume_lab:index' %}" class="nav-item {% if '/resume-lab/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                Resume Lab
+            </a>
+            <a href="{% url 'roadmap:index' %}" class="nav-item {% if '/roadmap/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/></svg>
+                Career Roadmap
+            </a>
+            <a href="{% url 'skill_gap:index' %}" class="nav-item {% if '/skill-gap/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Skill Gap Analysis
+            </a>
+            <a href="{% url 'opportunities:index' %}" class="nav-item {% if '/opportunities/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2l.5-.5"/><path d="M19 9l-6 6"/><path d="M19 9a8.5 8.5 0 0 0-6.5-6.5L3 13l4 4L19 9z"/></svg>
+                Opportunities
+            </a>
+            <a href="{% url 'ai_mentor:index' %}" class="nav-item {% if '/ai-mentor/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8l-3.5 8M12 8l3.5 8M9.5 14h5"/></svg>
+                AI Mentor
+            </a>
+            <a href="{% url 'achievements:index' %}" class="nav-item {% if '/achievements/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m12 8 1.5 3.5H17l-3 2 1 3.5-3-2-3 2 1-3.5-3-2h3.5z"/></svg>
+                Achievements
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="nav-item {% if '/profile/' in request.path %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Profile
+            </a>
+            <a href="#" class="nav-item">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </a>
+        </nav>
+        
+        <div class="sidebar__bot">
+            <div class="sidebar__bot-avatar-container">
+                <svg class="sidebar__bot-img" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="32" cy="32" r="28" fill="url(#botAura)" opacity="0.8"/>
+                    <path d="M16 48c0-4 4-8 16-8s16 4 16 8v4H16v-4z" fill="url(#botBodyGradient)"/>
+                    <rect x="29" y="36" width="6" height="6" rx="1" fill="#7C4DFF"/>
+                    <rect x="10" y="22" width="4" height="8" rx="2" fill="#E94396"/>
+                    <rect x="50" y="22" width="4" height="8" rx="2" fill="#E94396"/>
+                    <rect x="14" y="14" width="36" height="26" rx="8" fill="url(#botFaceGradient)" stroke="#8F57FF" stroke-width="1.5"/>
+                    <rect x="18" y="18" width="28" height="18" rx="4" fill="#0A061E"/>
+                    <circle cx="26" cy="27" r="3" fill="#00FFCC" filter="url(#eyeGlow)"/>
+                    <circle cx="38" cy="27" r="3" fill="#00FFCC" filter="url(#eyeGlow)"/>
+                    <path d="M29 31.5c1.5 1 3.5 1 5 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                    <rect x="31" y="8" width="2" height="6" fill="#8F57FF"/>
+                    <circle cx="32" cy="7" r="3" fill="#E94396" filter="url(#pinkGlow)"/>
+                    
+                    <defs>
+                        <linearGradient id="botAura" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#8F57FF" stop-opacity="0.3"/>
+                            <stop offset="100%" stop-color="#E94396" stop-opacity="0.1"/>
+                        </linearGradient>
+                        <linearGradient id="botBodyGradient" x1="16" y1="40" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#7C3AED"/>
+                            <stop offset="100%" stop-color="#E94396"/>
+                        </linearGradient>
+                        <linearGradient id="botFaceGradient" x1="14" y1="14" x2="50" y2="40" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#FFFFFF"/>
+                            <stop offset="100%" stop-color="#F3F0FF"/>
+                        </linearGradient>
+                        <filter id="eyeGlow" x="19" y="20" width="14" height="14" filterUnits="userSpaceOnUse">
+                            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                        </filter>
+                        <filter id="pinkGlow" x="25" y="0" width="14" height="14" filterUnits="userSpaceOnUse">
+                            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+            <h4>Hi {{ user.first_name|default:"Ananya" }}! 👋</h4>
+            <p>Need help with your career journey today?</p>
+            <a href="{% url 'ai_mentor:index' %}" class="btn-primary">Chat with AI Mentor</a>
+        </div>
+    </aside>
+    
+    <main class="main-content">
+        <!-- Header -->
+        <header class="app-header">
+            <div style="display:flex; align-items:center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 1.25rem; cursor: pointer;"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <div class="header__search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Search for tools, insights, opportunities...">
+                    <span class="search-shortcut">Ctrl + K</span>
+                </div>
+            </div>
+            
+            <div class="header__actions">
+                <a href="#" class="header__notification">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="badge">3</span>
+                </a>
+                <div class="header__profile-wrapper">
+                    <div class="header__profile" id="profileMenuToggle" role="button" aria-haspopup="true" aria-expanded="false">
+                        <div class="header__profile-avatar">
+                            {% if user.first_name or user.last_name %}
+                                {{ user.first_name|slice:":1"|upper }}{% if user.last_name %}{{ user.last_name|slice:":1"|upper }}{% endif %}
+                            {% else %}
+                                {{ user.username|slice:":2"|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="header__profile-info">
+                            <span class="header__profile-name">
+                                {% if user.first_name or user.last_name %}
+                                    {{ user.first_name }}{% if user.last_name %} {{ user.last_name }}{% endif %}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </span>
+                            <span class="header__profile-role">Student</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                    <div class="header__profile-menu" id="profileMenu" hidden>
+                        <a class="profile-menu-item" href="{% url 'accounts:logout' %}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px;"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('profileMenuToggle');
+            const menu = document.getElementById('profileMenu');
+
+            if (toggle && menu) {
+                toggle.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const visible = !menu.classList.contains('visible');
+                    if (visible) {
+                        menu.classList.add('visible');
+                        menu.removeAttribute('hidden');
+                        toggle.setAttribute('aria-expanded', 'true');
+                    } else {
+                        menu.classList.remove('visible');
+                        menu.setAttribute('hidden', '');
+                        toggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                menu.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (menu.classList.contains('visible') && !menu.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) {
+                        menu.classList.remove('visible');
+                        menu.setAttribute('hidden', '');
+                        toggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && menu && menu.classList.contains('visible')) {
+                    menu.classList.remove('visible');
+                    menu.setAttribute('hidden', '');
+                    toggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.padding = '14px 20px';
+            toast.style.borderRadius = '10px';
+            toast.style.color = 'white';
+            toast.style.fontWeight = '600';
+            toast.style.fontSize = '0.9rem';
+            toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
+            toast.style.animation = 'slideUpModal 0.3s ease';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '10px';
+            
+            if (type === 'error') {
+                toast.style.background = '#EF4444';
+                toast.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> <span>${message}</span>`;
+            } else if (type === 'success') {
+                toast.style.background = '#22C55E';
+                toast.innerHTML = `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> <span>${message}</span>`;
+            } else {
+                toast.style.background = 'var(--accent-violet)';
+                toast.innerHTML = `<span>${message}</span>`;
+            }
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

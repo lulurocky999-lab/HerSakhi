@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Onboarding — HerSakhi{% endblock %}
+
+{% block content %}
+<canvas id="mesh-gradient-companion" class="mesh-gradient mesh-gradient--companion"></canvas>
+
+<section class="section" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+  <div class="container" style="max-width: 600px; width: 100%; position: relative; z-index: 10;">
+    <div class="glass-card" style="padding: 3rem; text-align: center;">
+      <h2 class="heading-2" style="margin-bottom: 0.5rem;">Let's Personalize Your Journey</h2>
+      <p class="body-lg" style="margin-bottom: 2.5rem; color: var(--text-secondary);">Tell us a little about yourself so HerSakhi can guide you better.</p>
+      
+      <form method="POST" action="{% url 'accounts:onboarding' %}" style="display: flex; flex-direction: column; gap: 1.5rem; text-align: left;">
+        {% csrf_token %}
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label for="education" class="label">Current Education</label>
+            <input type="text" id="education" name="education" placeholder="e.g. B.Tech Computer Science" required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;" />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label for="current_year" class="label">Current Year</label>
+            <select id="current_year" name="current_year" required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;">
+              <option value="" disabled selected>Select Year</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+              <option value="graduate">Recent Graduate</option>
+              <option value="professional">Professional</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label for="skills" class="label">Key Skills (comma separated)</label>
+          <input type="text" id="skills" name="skills" placeholder="e.g. Python, UI Design, Public Speaking" required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;" />
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label for="interests" class="label">Interests / Hobbies</label>
+          <input type="text" id="interests" name="interests" placeholder="e.g. Machine Learning, Open Source" required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label for="dream_career" class="label">Dream Career</label>
+            <input type="text" id="dream_career" name="dream_career" placeholder="e.g. Product Manager" required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;" />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label for="location" class="label">Location (Optional)</label>
+            <input type="text" id="location" name="location" placeholder="e.g. Bangalore" style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif;" />
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label for="career_goals" class="label">What are your main career goals right now?</label>
+          <textarea id="career_goals" name="career_goals" rows="3" placeholder="e.g. I want to land a summer internship in tech..." required style="padding: 1rem; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: white; font-family: 'Inter', sans-serif; resize: none;"></textarea>
+        </div>
+        
+        <button type="submit" class="btn-primary magnetic-btn" style="margin-top: 1.5rem; width: 100%; justify-content: center;">
+          <span>Start My Journey</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

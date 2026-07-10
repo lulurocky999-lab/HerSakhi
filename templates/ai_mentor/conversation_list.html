@@ -1,0 +1,92 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Conversations — AI Mentor{% endblock %}
+
+{% block extra_head %}
+<style>
+.conversation-page {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+.conversation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.conversation-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+.conversation-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--app-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease;
+}
+.conversation-card:hover {
+    transform: translateY(-2px);
+}
+.conversation-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+.conversation-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+.conversation-preview {
+    margin: 0.85rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--app-radius);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="conversation-page">
+    <div class="conversation-header">
+        <div>
+            <h1>Your Conversations</h1>
+            <p class="text-muted">Review all AI Mentor chats and continue any thread.</p>
+        </div>
+        <a href="{% url 'ai_mentor:index' %}" class="btn btn-secondary">Back to Mentor</a>
+    </div>
+
+    {% if conversations %}
+        {% for conv in conversations %}
+        <div class="conversation-card">
+            <h2 class="conversation-title">{{ conv.title }}</h2>
+            <div class="conversation-meta">
+                <span>{{ conv.updated_at|date:'M d, Y' }}</span>
+                <span>{{ conv.updated_at|time:'P' }}</span>
+                <span>{{ conv.message_count }} messages</span>
+            </div>
+            <p class="conversation-preview">{{ conv.preview }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <p>No conversations yet. Start a chat from the AI Mentor page and your history will appear here.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

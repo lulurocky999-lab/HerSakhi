@@ -1,0 +1,319 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Dashboard — HerSakhi{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Welcome Section -->
+    <div class="welcome-row">
+        <div>
+            <h1>Good Morning, <span>{{ user.first_name|default:user.username }}!</span> 👋</h1>
+            <p>Let's make today productive and closer to your dream career.</p>
+        </div>
+        <div class="streak-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="2"><path d="M12 2c0 0-5 6-5 11a5 5 0 0 0 10 0c0-5-5-11-5-11Z"/></svg>
+            {{ stats.day_streak|default:0 }} <span>Day Streak</span>
+        </div>
+    </div>
+
+    <!-- 4 Stats + 1 Mission Card -->
+    <div class="stats-grid">
+        <!-- Stats -->
+        <div class="app-card">
+            <div class="stat-header">Career Readiness</div>
+            <div class="stat-value">{{ stats.career_readiness }}%</div>
+            <div class="stat-sub success">
+                {% if stats.career_readiness >= 80 %}Excellent
+                {% elif stats.career_readiness >= 50 %}On Track
+                {% else %}Needs Focus
+                {% endif %}
+            </div>
+            <svg class="stat-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <path d="M0 30 L20 25 L40 28 L60 15 L80 20 L100 5" fill="none" stroke="var(--accent-violet)" stroke-width="2"/>
+                <circle cx="0" cy="30" r="3" fill="var(--accent-violet)"/>
+                <circle cx="20" cy="25" r="3" fill="var(--accent-violet)"/>
+                <circle cx="40" cy="28" r="3" fill="var(--accent-violet)"/>
+                <circle cx="60" cy="15" r="3" fill="var(--accent-violet)"/>
+                <circle cx="80" cy="20" r="3" fill="var(--accent-violet)"/>
+                <circle cx="100" cy="5" r="3" fill="var(--accent-violet)"/>
+                <path d="M0 40 L0 30 L20 25 L40 28 L60 15 L80 20 L100 5 L100 40 Z" fill="url(#grad1)" opacity="0.2"/>
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--accent-violet);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--accent-violet);stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div style="font-size: 0.75rem; color: var(--success); margin-top: 0.5rem; display: flex; align-items:center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                {{ roadmap_completion }}% roadmap complete
+            </div>
+        </div>
+        
+        <div class="app-card">
+            <div class="stat-header">Skills Strength</div>
+            <div class="stat-value">{{ stats.skills_strength }}%</div>
+            <div class="stat-sub primary">
+                {% if stats.skills_strength >= 80 %}Highly Skilled
+                {% elif stats.skills_strength >= 50 %}Growing
+                {% else %}Needs Development
+                {% endif %}
+            </div>
+            <svg class="stat-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <path d="M0 35 L20 32 L40 35 L60 25 L80 30 L100 10" fill="none" stroke="var(--accent-violet)" stroke-width="2"/>
+                <circle cx="0" cy="35" r="3" fill="var(--accent-violet)"/>
+                <circle cx="20" cy="32" r="3" fill="var(--accent-violet)"/>
+                <circle cx="40" cy="35" r="3" fill="var(--accent-violet)"/>
+                <circle cx="60" cy="25" r="3" fill="var(--accent-violet)"/>
+                <circle cx="80" cy="30" r="3" fill="var(--accent-violet)"/>
+                <circle cx="100" cy="10" r="3" fill="var(--accent-violet)"/>
+                <path d="M0 40 L0 35 L20 32 L40 35 L60 25 L80 30 L100 10 L100 40 Z" fill="url(#grad1)" opacity="0.2"/>
+            </svg>
+            <div style="font-size: 0.75rem; color: var(--success); margin-top: 0.5rem; display: flex; align-items:center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                {{ tech_count }} technical, {{ soft_count }} soft skills
+            </div>
+        </div>
+        
+        <div class="app-card">
+            <div class="stat-header">Profile Progress</div>
+            <div class="stat-value">{{ stats.profile_progress }}%</div>
+            <div class="stat-sub success">
+                {% if stats.profile_progress >= 80 %}Outstanding
+                {% elif stats.profile_progress >= 50 %}Progressing
+                {% else %}Getting Started
+                {% endif %}
+            </div>
+            <svg class="stat-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <path d="M0 30 L20 35 L40 25 L60 30 L80 15 L100 5" fill="none" stroke="var(--success)" stroke-width="2"/>
+                <circle cx="0" cy="30" r="3" fill="var(--success)"/>
+                <circle cx="20" cy="35" r="3" fill="var(--success)"/>
+                <circle cx="40" cy="25" r="3" fill="var(--success)"/>
+                <circle cx="60" cy="30" r="3" fill="var(--success)"/>
+                <circle cx="80" cy="15" r="3" fill="var(--success)"/>
+                <circle cx="100" cy="5" r="3" fill="var(--success)"/>
+                <path d="M0 40 L0 30 L20 35 L40 25 L60 30 L80 15 L100 5 L100 40 Z" fill="url(#grad2)" opacity="0.2"/>
+                <defs>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--success);stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:var(--success);stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div style="font-size: 0.75rem; color: var(--success); margin-top: 0.5rem; display: flex; align-items:center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                {{ stats.profile_progress }}% complete
+            </div>
+        </div>
+
+        <div class="app-card" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+            <div class="stat-header">AI Score</div>
+            <div style="position:relative; width: 90px; height: 90px; border-radius: 50%; border: 6px solid var(--app-bg); border-top-color: var(--purple-bg); border-right-color: var(--accent-violet); border-bottom-color: var(--accent-violet); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <span style="font-size: 1.5rem; font-weight: 700;">{{ stats.ai_score }}</span>
+                <span style="font-size: 0.6rem; color: var(--success); font-weight: 600;">
+                    {% if stats.ai_score >= 80 %}Great
+                    {% elif stats.ai_score >= 60 %}Good
+                    {% else %}Needs Improvement
+                    {% endif %}
+                </span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--success); margin-top: 0.5rem; display: flex; align-items:center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                {% if latest_resume %}Based on latest resume score{% else %}Upload a resume to improve your AI score{% endif %}
+            </div>
+        </div>
+
+        <!-- Today's Mission -->
+        <div class="app-card mission-card">
+            <div>
+                <div class="mission-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Today's Mission
+                </div>
+                <div class="mission-content">
+                    <h3>{{ mission_title }}</h3>
+                    <p>{{ mission_text }}</p>
+                </div>
+            </div>
+            <div>
+                <div class="mission-progress">
+                    <div class="mission-progress-bar"><div class="mission-progress-fill" style="width: {{ mission_progress }}%;"></div></div>
+                    <div style="text-align: right; font-size: 0.75rem; opacity: 0.9;">{{ mission_progress }}%</div>
+                </div>
+                <button class="mission-btn" onclick="window.location.href='{{ mission_url }}'">
+                    Continue Mission
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3 Column Layout -->
+    <div class="bottom-grid">
+        <!-- Roadmap -->
+        <div class="app-card">
+            <div class="card-title-row">
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2" style="margin-right:8px; vertical-align:-3px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    Your Career Roadmap
+                </h3>
+                <a href="{% url 'roadmap:index' %}">View Full Roadmap →</a>
+            </div>
+            <div class="timeline">
+                {% for phase in roadmap_phases %}
+                <div class="timeline-item">
+                    <div class="timeline-icon {% if phase.status == 'Completed' %}completed{% elif phase.status == 'In Progress' %}in-progress{% endif %}">
+                        {% if phase.status == 'Completed' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        {% elif phase.status == 'In Progress' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2l.5-.5M12 3h.01M16.5 4.5l3 3M19 8a2.121 2.121 0 0 1-3 3L6 21l-3-3L13 8a2.121 2.121 0 0 1 3-3z"/></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <div>
+                            <h4 class="timeline-title">{{ phase.title }}</h4>
+                            <p class="timeline-desc">{{ phase.description }}</p>
+                        </div>
+                        <span class="timeline-status {% if phase.status == 'Completed' %}completed{% elif phase.status == 'In Progress' %}in-progress{% else %}upcoming{% endif %}">{{ phase.status }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state-card">
+                    <h4>Roadmap not generated yet</h4>
+                    <p>Generate a career roadmap to get a clear step-by-step plan tailored to your skills.</p>
+                    <button class="empty-state-btn" onclick="window.location.href='{% url 'roadmap:index' %}'">Create Roadmap</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Insights -->
+        <div class="app-card">
+            <div class="card-title-row">
+                <h3>Recent AI Insights</h3>
+                <a href="#">View All →</a>
+            </div>
+            <div class="insights-list">
+                {% for insight in ai_insights %}
+                <div class="insight-card">
+                    <div class="insight-icon {% if insight.icon_type == 'growth' %}green{% elif insight.icon_type == 'trend' %}purple{% else %}orange{% endif %}">
+                        {% if insight.icon_type == 'growth' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        {% elif insight.icon_type == 'trend' %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M12 2c0 0-5 6-5 11a5 5 0 0 0 10 0c0-5-5-11-5-11Z"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="insight-content">
+                        <h4>{{ insight.title }}</h4>
+                        <p>{{ insight.message }}</p>
+                    </div>
+                    <div class="insight-time">{{ insight.time_ago }}</div>
+                </div>
+                {% empty %}
+                <div class="empty-state-card">
+                    <h4>No insights yet</h4>
+                    <p>Complete your assessment or update your profile so AI can give you smarter insights.</p>
+                    <button class="empty-state-btn" onclick="window.location.href='{% url 'assessment:index' %}'">Take Assessment</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Opportunities -->
+        <div class="app-card">
+            <div class="card-title-row">
+                <h3>Upcoming Opportunities</h3>
+                <a href="{% url 'opportunities:index' %}">View All →</a>
+            </div>
+            <div class="opportunities-list">
+                {% for opp in opportunities %}
+                <div class="opp-card">
+                    <img src="{{ opp.logo_url }}" alt="{{ opp.company }}" class="opp-logo">
+                    <div class="opp-content">
+                        <h4 class="opp-title">{{ opp.title }}</h4>
+                        <p class="opp-company">{{ opp.company }}</p>
+                        <div class="opp-meta">
+                            <span class="opp-location">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {{ opp.location }}
+                            </span>
+                            <span class="opp-type {% if opp.type == 'Virtual' %}virtual{% endif %}">{{ opp.type }}</span>
+                            <span class="opp-time">{{ opp.time_left }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state-card">
+                    <h4>No opportunities found yet</h4>
+                    <p>Update your career preferences so we can surface the best matches for you.</p>
+                    <button class="empty-state-btn" onclick="window.location.href='{% url 'opportunities:index' %}'">Explore Opportunities</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin-top: 0.5rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Quick Actions</h3>
+        <div class="actions-grid">
+            <a href="{% url 'assessment:index' %}" class="quick-action-btn">
+                <div class="qa-icon qa-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="qa-text">
+                    <span class="qa-title">Take Assessment</span>
+                    <span class="qa-desc">Know your strengths</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'resume_lab:index' %}" class="quick-action-btn">
+                <div class="qa-icon qa-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <div class="qa-text">
+                    <span class="qa-title">Analyze Resume</span>
+                    <span class="qa-desc">Get AI feedback</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'roadmap:index' %}" class="quick-action-btn">
+                <div class="qa-icon qa-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                </div>
+                <div class="qa-text">
+                    <span class="qa-title">Generate Roadmap</span>
+                    <span class="qa-desc">Plan your journey</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'opportunities:index' %}" class="quick-action-btn">
+                <div class="qa-icon qa-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
+                <div class="qa-text">
+                    <span class="qa-title">Find Opportunities</span>
+                    <span class="qa-desc">Explore jobs & more</span>
+                </div>
+            </a>
+            
+            <a href="{% url 'ai_mentor:index' %}" class="quick-action-btn">
+                <div class="qa-icon qa-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="qa-text">
+                    <span class="qa-title">Chat with Mentor</span>
+                    <span class="qa-desc">Get guidance 24/7</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+SHREYA PATEL
+Frontend Developer
+shreya.patel@email.com | +91 99999 88888 | Mumbai, India
+linkedin.com/in/shreyapatel | github.com/shreyapatel
+
+SUMMARY
+Experienced Frontend Developer with 3+ years of expertise in building user interfaces using React, JavaScript, and Figma. Motivated to optimize performance and create beautiful UX designs.
+
+SKILLS
+React, JavaScript, TypeScript, Figma, HTML, CSS, Git, Webpack, Redux
+
+EXPERIENCE
+Frontend Developer at Design Studio (Jan 2024 - Present)
+- Designed and built responsive web interfaces using React and Tailwind CSS.
+- Collaborated with UX team in Figma to translate mockups into code.
+- Improved site performance by 25% by optimizing images and lazy loading.
+
+Junior React Developer at WebApps Co. (Jun 2022 - Dec 2023)
+- Maintained core React components and styled layouts.
+- Integrated REST APIs with Redux state management.
+
+EDUCATION
+Bachelor of Science in Information Technology - Mumbai University (2019 - 2022) - 9.0 CGPA

@@ -1,0 +1,1000 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Opportunities Hub — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+    .opps-container {
+        padding: 0.5rem 2.5rem 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-sizing: border-box;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+    }
+    .metric-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+    }
+    .metric-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .metric-icon-box.rec-icon { background: rgba(143, 87, 255, 0.08); color: var(--accent-violet); }
+    .metric-icon-box.sent-icon { background: rgba(34, 197, 94, 0.08); color: var(--success); }
+    .metric-icon-box.short-icon { background: rgba(245, 158, 11, 0.08); color: var(--warning); }
+    .metric-icon-box.offer-icon { background: rgba(233, 67, 150, 0.08); color: var(--accent-pink); }
+    .metric-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+    }
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    .metric-value {
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+        line-height: 1.2;
+    }
+    .metric-sub {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 500;
+        margin-top: 1px;
+    }
+    .metric-view-all {
+        position: absolute;
+        bottom: 12px;
+        right: 14px;
+        font-size: 0.7rem;
+        color: var(--accent-violet);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .metric-view-all:hover {
+        text-decoration: underline;
+    }
+
+    /* Buttons styling */
+    .set-alerts-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.6rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .set-alerts-btn:hover {
+        background: var(--accent-violet-light);
+    }
+    .filters-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.35rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.25);
+        transition: all 0.25s ease;
+    }
+    .filters-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0px 6px 16px rgba(143, 87, 255, 0.35);
+    }
+
+    /* Recommended Job Cards */
+    .opp-item-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        gap: 1.25rem;
+        box-shadow: var(--card-shadow);
+        transition: all 0.25s;
+        box-sizing: border-box;
+    }
+    .opp-item-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: rgba(143, 87, 255, 0.25);
+    }
+    .opp-logo-container {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        background: #F8F9FD;
+        border: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+    }
+    .opp-logo-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .opp-body-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .opp-job-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 2px;
+    }
+    .opp-company-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-light);
+        margin: 0 0 0.5rem;
+    }
+    .opp-tags-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 0.5rem;
+    }
+    .opp-tag-pill {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+    .opp-tag-pill.purple-pill { background: rgba(143, 87, 255, 0.08); color: var(--accent-violet); }
+    .opp-tag-pill.blue-pill { background: rgba(37, 99, 235, 0.08); color: #2563EB; }
+    
+    .opp-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 500;
+        margin-top: auto;
+    }
+    .opp-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .opp-meta-item svg {
+        color: #A1A5B7;
+    }
+
+    .opp-actions-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        min-width: 110px;
+    }
+    .opp-bookmark-btn {
+        background: transparent;
+        border: 1.5px solid var(--card-border);
+        color: var(--text-light);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .opp-bookmark-btn:hover {
+        border-color: var(--accent-violet);
+        color: var(--accent-violet);
+    }
+    .opp-bookmark-btn.saved {
+        background: var(--accent-violet-light);
+        border-color: var(--accent-violet);
+        color: var(--accent-violet);
+    }
+    .opp-apply-btn {
+        background: var(--accent-violet);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        min-width: 100px;
+    }
+    .opp-apply-btn:hover {
+        background: #7C4DFF;
+    }
+    .opp-apply-btn.applied {
+        background: #F3F4F6;
+        color: var(--text-light);
+        border: 1px solid var(--card-border);
+        cursor: default;
+    }
+
+    .explore-all-btn {
+        width: 100%;
+        background: white;
+        border: 1.5px solid var(--card-border);
+        color: var(--text-dark);
+        padding: 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.01);
+    }
+    .explore-all-btn:hover {
+        border-color: var(--accent-violet);
+        color: var(--accent-violet);
+    }
+
+    /* Bottom AI Banner */
+    .ai-banner-card {
+        background: linear-gradient(135deg, rgba(143, 87, 255, 0.04), rgba(233, 67, 150, 0.02));
+        border: 1px solid rgba(143, 87, 255, 0.15);
+        border-radius: 20px;
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--card-shadow);
+    }
+    .ai-banner-content h4 {
+        margin: 0 0 4px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        color: var(--text-dark);
+    }
+    .ai-banner-content p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-light);
+        font-weight: 500;
+    }
+    .find-with-ai-btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.7rem 1.35rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(143, 87, 255, 0.25);
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .find-with-ai-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(143, 87, 255, 0.35);
+    }
+
+    /* Right Sidebar Donut Layout */
+    .donut-layout {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+    .donut-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+    .legend-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    .legend-label-col {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .legend-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+    .legend-dot.color-1 { background: #8F57FF; }
+    .legend-dot.color-2 { background: #22C55E; }
+    .legend-dot.color-3 { background: #F59E0B; }
+    .legend-dot.color-4 { background: #E94396; }
+    .legend-dot.color-5 { background: #3B82F6; }
+    .legend-dot.color-6 { background: #9CA3AF; }
+    .legend-counts {
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+    .legend-counts span {
+        color: var(--text-light);
+        font-weight: 500;
+        margin-left: 2px;
+    }
+
+    /* Top Companies hiring grid */
+    .companies-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    .company-logo-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        transition: all 0.2s;
+        box-sizing: border-box;
+    }
+    .company-logo-card:hover {
+        border-color: rgba(143, 87, 255, 0.25);
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.03);
+    }
+    .company-logo-card img {
+        max-width: 100%;
+        max-height: 24px;
+        object-fit: contain;
+    }
+    .company-logo-name {
+        font-size: 0.65rem;
+        color: var(--text-light);
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    /* Saved Sidebar list */
+    .saved-list-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .saved-item-sidebar-card {
+        background: #F8F9FD;
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+    }
+    .saved-sidebar-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        background: white;
+        border: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+        flex-shrink: 0;
+    }
+    .saved-sidebar-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .saved-sidebar-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .saved-sidebar-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .saved-sidebar-meta {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        font-weight: 500;
+        margin-top: 1px;
+    }
+    .saved-sidebar-remove {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent-violet);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .view-all-saved-sidebar-btn {
+        width: 100%;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.55rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        display: block;
+        margin-top: 8px;
+    }
+    .view-all-saved-sidebar-btn:hover {
+        background: var(--accent-violet-light);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="opps-container">
+
+    <!-- Breadcrumb -->
+    <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 500; display:flex; gap: 4px;">
+        <span>Opportunities</span>
+        <span>&gt;&gt;</span>
+        <span style="color: var(--accent-violet); font-weight: 600;">Find Opportunities</span>
+    </div>
+
+    <!-- 2-Column Grid Layout -->
+    <div class="assessment-layout">
+        
+        <!-- Left Column: Main opportunities listings -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Page Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem;">Opportunities 🚀</h1>
+                    <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">Discover and apply to the best opportunities tailored for your career goals.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="set-alerts-btn" onclick="showToast('Opportunities alerts configured! We will notify you of matches.', 'success')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        Set Alerts
+                    </button>
+                    <button class="filters-btn" onclick="openMatchModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row of 4 Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon-box rec-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Recommended for You</span>
+                        <span class="metric-value" id="val-rec">24</span>
+                        <span class="metric-sub">New opportunities</span>
+                    </div>
+                    <a href="#" class="metric-view-all">View All →</a>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box sent-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Applications Sent</span>
+                        <span class="metric-value" id="val-applied">7</span>
+                        <span class="metric-sub">In Progress</span>
+                    </div>
+                    <a href="#" class="metric-view-all">View All →</a>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box short-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Shortlisted</span>
+                        <span class="metric-value" id="val-short">3</span>
+                        <span class="metric-sub">Great going!</span>
+                    </div>
+                    <a href="#" class="metric-view-all">View All →</a>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box offer-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a6 6 0 0 0-6 6v5a6 6 0 0 0 12 0V8a6 6 0 0 0-6-6z"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Offers</span>
+                        <span class="metric-value" id="val-offers">1</span>
+                        <span class="metric-sub">Congratulations!</span>
+                    </div>
+                    <a href="#" class="metric-view-all">View All →</a>
+                </div>
+            </div>
+
+            <!-- Job Listings Column -->
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-dark); font-family: 'Sora', sans-serif; margin: 0;">Recommended Opportunities</h3>
+                    <a href="#" style="font-size: 0.8rem; color: var(--accent-violet); text-decoration: none; font-weight: 600;">View All Opportunities →</a>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1rem;" id="recommended-list">
+                    <!-- Dynamic recommended opportunities -->
+                </div>
+
+                <button class="explore-all-btn" onclick="showToast('Exploring more opportunities hubs...', 'success')">
+                    Explore More Opportunities →
+                </button>
+            </div>
+
+            <!-- Bottom AI Matching Card -->
+            <div class="ai-banner-card">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; background: white; border: 1px solid rgba(143, 87, 255, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="14" y="14" width="36" height="26" rx="8" fill="url(#bannerBot)" stroke="#8F57FF" stroke-width="1.5"/>
+                            <rect x="18" y="18" width="28" height="18" rx="4" fill="#0A061E"/>
+                            <circle cx="26" cy="27" r="2.5" fill="#00FFCC"/>
+                            <circle cx="38" cy="27" r="2.5" fill="#00FFCC"/>
+                            <path d="M29 31.5c1.5 1 3.5 1 5 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="bannerBot" x1="14" y1="14" x2="50" y2="40">
+                                    <stop stop-color="#8F57FF"/>
+                                    <stop offset="100%" stop-color="#E94396"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="ai-banner-content">
+                        <h4>Let AI find the perfect opportunities for you</h4>
+                        <p>Get personalized job & internship recommendations based on your profile and goals.</p>
+                    </div>
+                </div>
+                <button class="find-with-ai-btn" onclick="openMatchModal()">
+                    Find Opportunities with AI →
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Right Sidebar Panel -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Opportunities by Category (Pie Chart) -->
+            <div class="app-card" style="padding: 1.25rem;">
+                <div class="card-title-row" style="margin-bottom: 1rem;">
+                    <h4 class="sidebar-section-title" style="margin: 0;">Opportunities by Category</h4>
+                    <a href="#" style="font-size: 0.75rem;">View All</a>
+                </div>
+                <div class="donut-layout">
+                    <!-- SVG Donut Chart -->
+                    <div style="position: relative; width: 100px; height: 100px; flex-shrink: 0;">
+                        <svg viewBox="0 0 100 100" width="100" height="100" style="transform: rotate(-90deg);">
+                            <circle cx="50" cy="50" r="40" stroke="#F1F3F9" stroke-width="12" fill="transparent"/>
+                            <!-- Data & Analytics Segment: 27% -->
+                            <circle cx="50" cy="50" r="40" stroke="#8F57FF" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="67.8" stroke-linecap="round"/>
+                            <!-- Software Segment: 26% (251.2 * 0.26 = 65.3) offset = 67.8 + 65.3 = 133.1 -->
+                            <circle cx="50" cy="50" r="40" stroke="#22C55E" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="133.1" stroke-linecap="round"/>
+                            <!-- Product Segment: 17% (251.2 * 0.17 = 42.7) offset = 133.1 + 42.7 = 175.8 -->
+                            <circle cx="50" cy="50" r="40" stroke="#F59E0B" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="175.8" stroke-linecap="round"/>
+                            <!-- Business Segment: 15% (251.2 * 0.15 = 37.7) offset = 175.8 + 37.7 = 213.5 -->
+                            <circle cx="50" cy="50" r="40" stroke="#E94396" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="213.5" stroke-linecap="round"/>
+                            <!-- Design Segment: 9% (251.2 * 0.09 = 22.6) offset = 213.5 + 22.6 = 236.1 -->
+                            <circle cx="50" cy="50" r="40" stroke="#3B82F6" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="236.1" stroke-linecap="round"/>
+                            <!-- Other Segment: 6% -->
+                            <circle cx="50" cy="50" r="40" stroke="#9CA3AF" stroke-width="12" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round"/>
+                        </svg>
+                        <div style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                            <span style="font-family:'Sora', sans-serif; font-weight:800; font-size:1.1rem; color:var(--text-dark); line-height:1;" id="donut-center-total">156</span>
+                            <span style="font-size:0.55rem; color:var(--text-light); font-weight:600; margin-top:1px;">Total</span>
+                        </div>
+                    </div>
+
+                    <!-- Chart Legend -->
+                    <div class="donut-legend" id="donut-legend">
+                        <!-- Dynamic legend items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Companies Hiring -->
+            <div class="app-card">
+                <div class="card-title-row" style="margin-bottom: 1rem;">
+                    <h4 class="sidebar-section-title" style="margin: 0;">Top Companies Hiring</h4>
+                    <a href="#" style="font-size: 0.75rem;">View All</a>
+                </div>
+                <div class="companies-grid" id="companies-grid">
+                    <!-- Dynamic companies -->
+                </div>
+            </div>
+
+            <!-- Saved Opportunities (Sidebar) -->
+            <div class="app-card">
+                <div class="card-title-row" style="margin-bottom: 1rem;">
+                    <h4 class="sidebar-section-title" style="margin: 0;">Saved Opportunities</h4>
+                    <a href="#" style="font-size: 0.75rem;">View All</a>
+                </div>
+                <div class="saved-list-sidebar" id="saved-sidebar-list">
+                    <!-- Dynamic saved list -->
+                </div>
+                <button class="view-all-saved-sidebar-btn" onclick="showToast('Viewing all saved opportunities...', 'success')">
+                    View All Saved
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MATCH OPPORTUNITIES MODAL                  -->
+<!-- ========================================== -->
+<div class="roadmap-modal-overlay" id="match-modal" style="display: none;">
+    <div class="roadmap-modal-content">
+        <div class="roadmap-modal-header">
+            <h3>Find Your Career Matches</h3>
+            <button class="modal-close-btn" onclick="closeMatchModal()">&times;</button>
+        </div>
+        <div class="roadmap-modal-body">
+            <div class="modal-form-group">
+                <label for="inputSkills">Your Key Skills</label>
+                <input type="text" id="inputSkills" placeholder="e.g. Python, SQL, Excel, React" value="HTML, CSS, JS, Python, Git">
+            </div>
+            <div class="modal-form-group">
+                <label for="inputPreferences">Preferences (Locations, Role types)</label>
+                <select id="inputPreferences">
+                    <option value="Internships, Remote">Internships, Remote</option>
+                    <option value="Full-time Internships, Hybrid">Full-time Internships, Hybrid</option>
+                    <option value="Entry Level Jobs, Bangalore">Entry Level Jobs, Bangalore</option>
+                    <option value="Virtual Internships, Open Source">Virtual Internships, Open Source</option>
+                </select>
+            </div>
+            <button class="modal-submit-btn" onclick="submitAIOpportunities()">
+                <span id="submit-btn-text">Find Matches</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Loading Overlay -->
+<div class="roadmap-modal-overlay" id="loading-overlay-generation" style="display: none; flex-direction: column; gap: 1.25rem; z-index: 1100;">
+    <div class="loading-spinner"></div>
+    <div style="color: white; font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 600; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+        AI is finding matches from our opportunities hub...<br>
+        <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8; margin-top: 5px; display: block;">Matching with your target goals.</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // State management
+    let oppData = null;
+
+    try {
+        oppData = {{ opportunities_json|safe }};
+    } catch(e) {
+        console.error("Failed to parse opportunities data", e);
+    }
+
+    // Modal controls
+    function openMatchModal() {
+        document.getElementById('match-modal').style.display = 'flex';
+    }
+    function closeMatchModal() {
+        document.getElementById('match-modal').style.display = 'none';
+    }
+
+    // Post checklist changes to DB
+    async function saveStateToDB() {
+        try {
+            await fetch("{% url 'opportunities:match' %}", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ data: oppData })
+            });
+        } catch(e) {
+            console.error("Network error while saving state:", e);
+        }
+    }
+
+    // Toggle saved opportunity
+    function toggleSaveJob(jobId, listType) {
+        if (!oppData) return;
+        
+        let job = null;
+        if (listType === 'recommended') {
+            job = oppData.recommended.find(j => j.id === jobId);
+        } else {
+            job = oppData.saved.find(j => j.id === jobId);
+        }
+        
+        if (!job) return;
+
+        job.saved = !job.saved;
+
+        if (job.saved) {
+            // Add to saved list if not present
+            if (!oppData.saved.some(j => j.id === jobId)) {
+                // copy job
+                const jobCopy = {...job};
+                oppData.saved.push(jobCopy);
+            }
+            // Increase Shortlisted metric slightly
+            oppData.metrics.shortlisted += 1;
+        } else {
+            // Remove from saved list
+            oppData.saved = oppData.saved.filter(j => j.id !== jobId);
+            // Also update recommended list status if exists
+            const recJob = oppData.recommended.find(j => j.id === jobId);
+            if (recJob) recJob.saved = false;
+            
+            // Decrease Shortlisted metric
+            oppData.metrics.shortlisted = Math.max(0, oppData.metrics.shortlisted - 1);
+        }
+
+        renderOpps(oppData);
+        saveStateToDB();
+    }
+
+    // Apply for job
+    function applyJob(jobId) {
+        if (!oppData) return;
+        const job = oppData.recommended.find(j => j.id === jobId);
+        if (job) {
+            showToast(`Successfully applied to ${job.title} at ${job.company}!`, 'success');
+        }
+        renderOpps(oppData);
+        saveStateToDB();
+    }
+
+    // Submit AI match options
+    async function submitAIOpportunities() {
+        const skills = document.getElementById('inputSkills').value.trim();
+        const preferences = document.getElementById('inputPreferences').value;
+
+        if (!skills) {
+            showToast("Please enter your skills.", "error");
+            return;
+        }
+
+        closeMatchModal();
+        document.getElementById('loading-overlay-generation').style.display = 'flex';
+
+        try {
+            const response = await fetch("{% url 'opportunities:match' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    skills: skills,
+                    preferences: preferences
+                })
+            });
+
+            const resData = await response.json();
+            if (resData.success) {
+                oppData = resData.data;
+                renderOpps(oppData);
+            } else {
+                showToast("AI matching failed: " + resData.message, "error");
+            }
+        } catch(e) {
+            showToast("Network error: Failed to connect to opportunities service.", "error");
+        } finally {
+            document.getElementById('loading-overlay-generation').style.display = 'none';
+        }
+    }
+
+    // Render function
+    function renderOpps(data) {
+        if (!data) return;
+
+        // Metrics
+        document.getElementById('val-rec').innerText = data.metrics.recommended;
+        document.getElementById('val-applied').innerText = data.metrics.applied;
+        document.getElementById('val-short').innerText = data.metrics.shortlisted;
+        document.getElementById('val-offers').innerText = data.metrics.offers;
+
+        // Recommended list
+        const recList = document.getElementById('recommended-list');
+        recList.innerHTML = '';
+        
+        if (data.recommended && Array.isArray(data.recommended)) {
+            data.recommended.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'opp-item-card';
+
+                let tagsHTML = '';
+                if (job.tags && Array.isArray(job.tags)) {
+                    job.tags.forEach((tag, idx) => {
+                        const tagClass = idx % 2 === 0 ? 'purple-pill' : 'blue-pill';
+                        tagsHTML += `<span class="opp-tag-pill ${tagClass}">${tag}</span>`;
+                    });
+                }
+
+                card.innerHTML = `
+                    <div class="opp-logo-container">
+                        <img src="${job.logo_url || 'https://logo.clearbit.com/clearbit.com'}" alt="${job.company}" onerror="this.src='https://logo.clearbit.com/clearbit.com'">
+                    </div>
+                    <div class="opp-body-details">
+                        <h4 class="opp-job-title">${job.title}</h4>
+                        <span class="opp-company-name">${job.company}</span>
+                        <div class="opp-tags-row">
+                            ${tagsHTML}
+                        </div>
+                        <div class="opp-meta-row">
+                            <div class="opp-meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                ${job.location}
+                            </div>
+                            <div class="opp-meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                ${job.type}
+                            </div>
+                            <div class="opp-meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                ${job.time_left}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="opp-actions-col">
+                        <button class="opp-bookmark-btn ${job.saved ? 'saved' : ''}" onclick="toggleSaveJob('${job.id}', 'recommended')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="${job.saved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                        </button>
+                        <button class="opp-apply-btn ${job.applied ? 'applied' : ''}" onclick="applyJob('${job.id}')">
+                            ${job.applied ? 'Applied' : 'Apply Now'}
+                        </button>
+                    </div>
+                `;
+                recList.appendChild(card);
+            });
+        }
+
+        // Saved sidebar list
+        const savedList = document.getElementById('saved-sidebar-list');
+        savedList.innerHTML = '';
+        
+        if (data.saved && Array.isArray(data.saved)) {
+            data.saved.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'saved-item-sidebar-card';
+                card.innerHTML = `
+                    <div class="saved-sidebar-logo">
+                        <img src="${job.logo_url || 'https://logo.clearbit.com/clearbit.com'}" alt="${job.company}" onerror="this.src='https://logo.clearbit.com/clearbit.com'">
+                    </div>
+                    <div class="saved-sidebar-info">
+                        <span class="saved-sidebar-title">${job.title}</span>
+                        <span class="saved-sidebar-meta">${job.company} &bull; ${job.location}</span>
+                    </div>
+                    <button class="saved-sidebar-remove" onclick="toggleSaveJob('${job.id}', 'saved')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    </button>
+                `;
+                savedList.appendChild(card);
+            });
+            if (data.saved.length === 0) {
+                savedList.innerHTML = `<p style="font-size:0.75rem; color:var(--text-light); text-align:center; padding:1rem 0; margin:0;">No saved opportunities.</p>`;
+            }
+        }
+
+        // Categories Legend
+        const legendContainer = document.getElementById('donut-legend');
+        legendContainer.innerHTML = '';
+        if (data.categories && Array.isArray(data.categories)) {
+            data.categories.forEach((cat, idx) => {
+                const dotIdx = (idx % 6) + 1;
+                const legend = document.createElement('div');
+                legend.className = 'legend-item';
+                legend.innerHTML = `
+                    <div class="legend-label-col">
+                        <div class="legend-dot color-${dotIdx}"></div>
+                        <span>${cat.name}</span>
+                    </div>
+                    <span class="legend-counts">${cat.count} <span>(${cat.pct}%)</span></span>
+                `;
+                legendContainer.appendChild(legend);
+            });
+        }
+
+        // Center total
+        document.getElementById('donut-center-total').innerText = data.total_categories || 156;
+
+        // Companies Hiring
+        const compGrid = document.getElementById('companies-grid');
+        compGrid.innerHTML = '';
+        if (data.top_companies && Array.isArray(data.top_companies)) {
+            data.top_companies.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'company-logo-card';
+                card.innerHTML = `
+                    <img src="${comp.logo_url || ''}" alt="${comp.name}" onerror="this.style.display='none'">
+                    <span class="company-logo-name">${comp.name}</span>
+                `;
+                compGrid.appendChild(card);
+            });
+        }
+    }
+
+    // Initial draw on DOM load
+    function initOpps() {
+        if (oppData) {
+            renderOpps(oppData);
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOpps);
+    } else {
+        initOpps();
+    }
+</script>
+{% endblock %}

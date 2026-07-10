@@ -1,0 +1,1560 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Resume Lab — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<!-- PDF.js library for client-side PDF text extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<style>
+    /* ==========================================================================
+       Premium Resume Lab Styles
+       ========================================================================== */
+    
+    .resume-lab-breadcrumb {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+    .resume-lab-breadcrumb span.active-crumb {
+        color: var(--accent-violet);
+        font-weight: 600;
+    }
+
+    .page-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .page-title-block h1 {
+        font-family: 'Sora', sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .page-title-block p {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Outlined Violet Button */
+    .btn-outline-violet {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        border: 1px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.65rem 1.25rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+    .btn-outline-violet:hover {
+        background-color: var(--accent-violet-light);
+        transform: translateY(-1px);
+    }
+
+    /* Filled Violet/Pink Button */
+    .btn-filled-violet {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        padding: 0.65rem 1.25rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.2);
+        cursor: pointer;
+    }
+    .btn-filled-violet:hover {
+        transform: translateY(-1px);
+        box-shadow: 0px 6px 16px rgba(143, 87, 255, 0.3);
+    }
+
+    /* Header File Info Card */
+    .file-status-card {
+        background: white;
+        border-radius: var(--app-radius);
+        padding: 1.25rem 1.5rem;
+        border: 1px solid var(--card-border);
+        box-shadow: var(--card-shadow);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .file-status-card:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    .file-info-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .file-icon-box {
+        width: 48px;
+        height: 48px;
+        background-color: var(--accent-violet-light);
+        color: var(--accent-violet);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .file-check-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 16px;
+        height: 16px;
+        background-color: var(--success);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        font-size: 0.55rem;
+    }
+    .file-meta h4 {
+        margin: 0 0 2px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .file-meta p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-light);
+    }
+    .last-analyzed-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .last-analyzed-title {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .last-analyzed-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Dashboard Layout Grid */
+    .resume-dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 1.5rem;
+        align-items: start;
+        box-sizing: border-box;
+    }
+
+    .main-panel-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Score Row Grid */
+    .score-row-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 1.5rem;
+    }
+
+    /* Circular Score Gauge */
+    .circular-gauge-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .gauge-wrapper {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin: 0.5rem 0 1rem;
+    }
+    .gauge-svg {
+        transform: rotate(-90deg);
+        width: 140px;
+        height: 140px;
+    }
+    .gauge-bg {
+        stroke: #EEF0F7;
+    }
+    .gauge-fill {
+        stroke: var(--accent-violet);
+        transition: stroke-dashoffset 0.8s ease-in-out;
+    }
+    .gauge-inner-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .gauge-score-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        font-family: 'Sora', sans-serif;
+        color: var(--text-dark);
+        line-height: 1;
+    }
+    .gauge-score-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+    .gauge-message {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+    }
+    .gauge-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .gauge-badge.improvement {
+        background-color: var(--accent-violet-light);
+        color: var(--accent-violet);
+    }
+    .gauge-badge.success {
+        background-color: var(--success-bg);
+        color: var(--success);
+    }
+
+    /* Score Breakdown */
+    .breakdown-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        width: 100%;
+    }
+    .breakdown-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .breakdown-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .breakdown-name {
+        color: var(--text-dark);
+    }
+    .breakdown-score {
+        font-weight: 700;
+    }
+    .breakdown-bar-bg {
+        height: 8px;
+        background: #EEF0F7;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .breakdown-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.8s ease-in-out;
+    }
+
+    /* Strengths and Needs Improvement Side-by-Side */
+    .strengths-improvements-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+    .feedback-card {
+        padding: 1.25rem;
+        border-radius: 16px;
+        border: 1px solid var(--card-border);
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.01);
+    }
+    .feedback-card.strengths-theme {
+        background: rgba(34, 197, 94, 0.02);
+        border-color: rgba(34, 197, 94, 0.15);
+    }
+    .feedback-card.improvements-theme {
+        background: rgba(245, 158, 11, 0.02);
+        border-color: rgba(245, 158, 11, 0.15);
+    }
+    .feedback-title {
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        margin: 0 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .feedback-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    .feedback-item {
+        display: flex;
+        gap: 10px;
+        font-size: 0.85rem;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+    .feedback-item svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .feedback-item.strength-item {
+        color: var(--text-dark);
+    }
+    .feedback-item.improvement-item {
+        color: var(--text-dark);
+    }
+
+    /* Keyword Match Gauge */
+    .keyword-match-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem;
+        gap: 1.25rem;
+    }
+    .keyword-match-info {
+        flex: 1;
+    }
+    .keyword-match-badge {
+        background-color: var(--success-bg);
+        color: var(--success);
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
+    }
+
+    /* Suggestions List */
+    .suggestions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+    .suggestion-item-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 0.85rem 1rem;
+        border-radius: 14px;
+        background: #F8F9FD;
+        border: 1px solid #EEF0F7;
+        transition: all 0.25s ease;
+    }
+    .suggestion-item-box:hover {
+        border-color: rgba(143, 87, 255, 0.2);
+        background: white;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.03);
+    }
+    .suggestion-icon-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--accent-violet-light);
+        color: var(--accent-violet);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .suggestion-content {
+        flex: 1;
+    }
+    .suggestion-item-title {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 2px;
+    }
+    .suggestion-item-desc {
+        font-size: 0.78rem;
+        color: var(--text-light);
+        margin: 0;
+        line-height: 1.35;
+    }
+    .impact-pill {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 8px;
+        white-space: nowrap;
+        align-self: center;
+    }
+    .impact-pill.high {
+        background-color: var(--success-bg);
+        color: var(--success);
+    }
+    .impact-pill.medium {
+        background-color: var(--warning-bg);
+        color: var(--warning);
+    }
+
+    /* Resume Preview Paper Box */
+    .resume-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    .resume-preview-header h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+        margin: 0;
+    }
+    .resume-scroll-container {
+        max-height: 480px;
+        overflow-y: auto;
+        border-radius: 14px;
+        border: 1px solid var(--card-border);
+        background: #F3F4F6;
+        padding: 1.5rem 1rem;
+        box-sizing: border-box;
+    }
+    /* Resume Paper Styling */
+    .resume-paper-page {
+        background: white;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        width: 100%;
+        max-width: 760px;
+        margin: 0 auto;
+        min-height: 800px;
+        font-family: 'Inter', sans-serif;
+        box-sizing: border-box;
+        color: #2D3748;
+    }
+    .resume-name-header {
+        text-align: center;
+        border-bottom: 2px solid #4A5568;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .resume-name-header h2 {
+        font-family: 'Sora', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #1A202C;
+        margin: 0 0 4px;
+        letter-spacing: 0.5px;
+    }
+    .resume-name-header .resume-role-sub {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent-violet);
+        margin: 0 0 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .resume-contact-info {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.78rem;
+        color: #718096;
+        font-weight: 500;
+    }
+    .resume-section-title {
+        font-family: 'Sora', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #1A202C;
+        text-transform: uppercase;
+        border-bottom: 1px solid #E2E8F0;
+        padding-bottom: 4px;
+        margin: 1.25rem 0 0.5rem;
+        letter-spacing: 0.5px;
+    }
+    .resume-summary-text {
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: #4A5568;
+        margin: 0;
+    }
+    .resume-skills-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 0.5rem;
+    }
+    .resume-skill-badge {
+        font-size: 0.72rem;
+        background-color: #F7FAFC;
+        border: 1px solid #E2E8F0;
+        color: #4A5568;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    .resume-exp-item {
+        margin-bottom: 1rem;
+    }
+    .resume-exp-title-row {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #2D3748;
+        margin-bottom: 3px;
+    }
+    .resume-exp-company {
+        color: var(--accent-violet);
+    }
+    .resume-exp-meta-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.76rem;
+        color: #718096;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+    .resume-exp-bullets {
+        padding-left: 1.25rem;
+        margin: 0;
+        font-size: 0.78rem;
+        line-height: 1.5;
+        color: #4A5568;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* AI Mentor CTA Card */
+    .ai-mentor-cta-card {
+        background: linear-gradient(135deg, #6B46C1, #8F57FF);
+        color: white;
+        border-radius: var(--app-radius);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+        box-shadow: 0px 8px 20px rgba(107, 70, 193, 0.2);
+    }
+    .ai-mentor-cta-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 12px 28px rgba(107, 70, 193, 0.3);
+    }
+    .cta-message-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .cta-icon-box {
+        width: 36px;
+        height: 36px;
+        background-color: rgba(255,255,255,0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cta-text h4 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+    }
+    .cta-text p {
+        margin: 2px 0 0;
+        font-size: 0.8rem;
+        opacity: 0.85;
+    }
+
+    /* Loading Overlay styling */
+    .analysis-loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(10, 6, 30, 0.8);
+        backdrop-filter: blur(8px);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+    }
+    .analysis-loading-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .loading-pulse-orb {
+        width: 80px;
+        height: 80px;
+        background: var(--primary-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 35px var(--accent-violet);
+        animation: loadingPulse 1.8s infinite ease-in-out;
+        margin-bottom: 1.5rem;
+    }
+    .loading-pulse-orb svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    .loading-title {
+        font-family: 'Sora', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .loading-subtitle {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 320px;
+        text-align: center;
+        line-height: 1.4;
+    }
+
+    @keyframes loadingPulse {
+        0% {
+            transform: scale(0.95);
+            box-shadow: 0 0 15px rgba(143, 87, 255, 0.5);
+        }
+        70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(143, 87, 255, 0.9);
+        }
+        100% {
+            transform: scale(0.95);
+            box-shadow: 0 0 15px rgba(143, 87, 255, 0.5);
+        }
+    }
+
+    /* Modal Fullscreen styling */
+    .fullscreen-modal-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    .fullscreen-modal-card {
+        background: white;
+        border-radius: var(--app-radius);
+        width: 90%;
+        max-width: 840px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid var(--card-border);
+    }
+    .modal-header h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+        margin: 0;
+    }
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.75rem;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: color 0.2s ease;
+        line-height: 1;
+    }
+    .modal-close-btn:hover {
+        color: var(--text-dark);
+    }
+    .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem;
+        background-color: #F3F4F6;
+    }
+
+    /* Drag and Drop Hover Hint */
+    .drag-hover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(143, 87, 255, 0.08);
+        border: 2px dashed var(--accent-violet);
+        border-radius: var(--app-radius);
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+    .file-status-card.dragover .drag-hover-overlay {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" style="position: relative;">
+    
+    <!-- Top Row: Breadcrumbs & Actions -->
+    <div class="resume-lab-breadcrumb">
+        Resume Lab <span style="margin: 0 0.4rem; color: #A1A5B7;">&gt;&gt;</span> <span class="active-crumb">Resume Analysis</span>
+    </div>
+
+    <div class="page-header-row">
+        <div class="page-title-block">
+            <h1>Resume Lab <span style="font-size: 1.6rem;">✨</span></h1>
+            <p>AI-powered resume analysis to help you stand out and land your dream job.</p>
+        </div>
+        
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+            <!-- Hidden File Input for PDF/TXT uploads -->
+            <input type="file" id="resumeFileInput" accept=".pdf,.txt" style="display: none;" onchange="handleFileSelect(event)">
+            
+            <button class="btn-outline-violet" onclick="triggerFileUpload()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload New Resume
+            </button>
+            <button class="btn-filled-violet" onclick="downloadReport()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Active Upload File Status Card -->
+    <div class="file-status-card" id="fileStatusCard" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" style="position: relative;">
+        <!-- Drag over helper overlay -->
+        <div class="drag-hover-overlay"></div>
+
+        <div class="file-info-group">
+            <div class="file-icon-box">
+                <!-- PDF file icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <div class="file-check-badge">✔</div>
+            </div>
+            <div class="file-meta">
+                <h4 id="displayFileName">
+                    {% if resume %}
+                        {{ resume.file.name|slice:"15:"|default:"Uploaded_Resume.pdf" }}
+                    {% else %}
+                        No Resume Uploaded
+                    {% endif %}
+                </h4>
+                <p id="displayUploadMeta">
+                    {% if resume %}
+                        Uploaded on {{ resume.uploaded_at|date:"d M Y" }}
+                    {% else %}
+                        Please upload a PDF to begin
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="file-info-group" style="gap: 2.5rem;">
+            <div class="last-analyzed-group">
+                <span class="last-analyzed-title">Last Analyzed</span>
+                <span class="last-analyzed-value" id="displayLastAnalyzed">
+                    {% if resume %}
+                        {{ resume.updated_at|date:"d M Y \a\t h:i A" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
+            </div>
+            
+            <button class="btn-outline-violet" onclick="triggerReanalysis()" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: 10px; gap: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Re-analyze
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="resume-dashboard-grid">
+        
+        <!-- Left Side Column (ATS score, breakdown, resume preview) -->
+        <div class="main-panel-stack">
+            
+            <div class="score-row-grid">
+                <!-- Circular ATS Score Gauge Card -->
+                <div class="app-card circular-gauge-box">
+                    <h3 class="feedback-title" style="margin-bottom: 0.5rem; justify-content: center; font-size: 1.05rem;">ATS Score</h3>
+                    
+                    <div class="gauge-wrapper">
+                        <svg class="gauge-svg">
+                            <circle class="gauge-bg" cx="70" cy="70" r="58" stroke-width="9" fill="transparent" />
+                            <circle class="gauge-fill" id="atsProgressCircle" cx="70" cy="70" r="58" stroke-width="9" fill="transparent" stroke-dasharray="364.4" stroke-dashoffset="364.4" stroke-linecap="round" />
+                        </svg>
+                        <div class="gauge-inner-text">
+                            <span class="gauge-score-value" id="atsScoreValue">72</span>
+                            <span class="gauge-score-label" id="atsScoreLabel" style="color: var(--success);">Good</span>
+                        </div>
+                    </div>
+                    
+                    <div class="gauge-message" id="atsScoreMessage">Your resume is good, but can be better!</div>
+                    <div>
+                        <span class="gauge-badge improvement" id="atsImprovementBadge">↑ 19 points improvement possible</span>
+                    </div>
+                </div>
+
+                <!-- Progress Breakdown Bars Card -->
+                <div class="app-card" style="padding: 1.5rem;">
+                    <h3 class="feedback-title" style="margin-bottom: 1.25rem; font-size: 1.05rem;">Score Breakdown</h3>
+                    
+                    <div class="breakdown-list">
+                        <!-- Format -->
+                        <div class="breakdown-item">
+                            <div class="breakdown-labels">
+                                <span class="breakdown-name">Format</span>
+                                <span class="breakdown-score" style="color: var(--success);" id="breakdownValFormat">80/100</span>
+                            </div>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar-fill" id="breakdownFillFormat" style="background-color: var(--success);"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="breakdown-item">
+                            <div class="breakdown-labels">
+                                <span class="breakdown-name">Content</span>
+                                <span class="breakdown-score" style="color: var(--warning);" id="breakdownValContent">70/100</span>
+                            </div>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar-fill" id="breakdownFillContent" style="background-color: var(--warning);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="breakdown-item">
+                            <div class="breakdown-labels">
+                                <span class="breakdown-name">Skills</span>
+                                <span class="breakdown-score" style="color: var(--warning);" id="breakdownValSkills">65/100</span>
+                            </div>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar-fill" id="breakdownFillSkills" style="background-color: var(--warning);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Experience -->
+                        <div class="breakdown-item">
+                            <div class="breakdown-labels">
+                                <span class="breakdown-name">Experience</span>
+                                <span class="breakdown-score" style="color: var(--success);" id="breakdownValExperience">75/100</span>
+                            </div>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar-fill" id="breakdownFillExperience" style="background-color: var(--success);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Keywords -->
+                        <div class="breakdown-item">
+                            <div class="breakdown-labels">
+                                <span class="breakdown-name">Keywords</span>
+                                <span class="breakdown-score" style="color: var(--warning);" id="breakdownValKeywords">68/100</span>
+                            </div>
+                            <div class="breakdown-bar-bg">
+                                <div class="breakdown-bar-fill" id="breakdownFillKeywords" style="background-color: var(--warning);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resume Preview Panel Card -->
+            <div class="app-card" style="padding: 1.5rem;">
+                <div class="resume-preview-header">
+                    <h3>Resume Preview</h3>
+                    <button class="btn-outline-violet" onclick="openFullscreenPreview()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-radius: 8px; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                        Full Screen
+                    </button>
+                </div>
+                
+                <div class="resume-scroll-container">
+                    <div class="resume-paper-page" id="resumePreviewPaper">
+                        <!-- Preview content populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+        <!-- Right Side Column (Strengths, Improvements, Match, Suggestions, bot CTA) -->
+        <div class="main-panel-stack">
+            
+            <!-- Strengths and Improvements Cards in small row -->
+            <div class="strengths-improvements-grid">
+                <!-- Top Strengths Card -->
+                <div class="feedback-card strengths-theme">
+                    <h4 class="feedback-title" style="color: var(--success);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Top Strengths
+                    </h4>
+                    <ul class="feedback-list" id="strengthsList">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Needs Improvement Card -->
+                <div class="feedback-card improvements-theme">
+                    <h4 class="feedback-title" style="color: var(--warning);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Needs Improvement
+                    </h4>
+                    <ul class="feedback-list" id="improvementsList">
+                        <!-- Populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Keyword Match Circular Gauge Card -->
+            <div class="app-card keyword-match-box">
+                <div class="keyword-match-info">
+                    <h3 class="feedback-title" style="font-size: 1.05rem; margin-bottom: 6px;">Keyword Match</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-light); margin: 0; line-height: 1.3;">Good match with <span id="matchTargetRole" style="font-weight: 700; color: var(--accent-violet);">Software Engineer</span> roles</p>
+                    <div>
+                        <span class="keyword-match-badge" id="keywordDiffBadge">↑ 12% more keywords to add</span>
+                    </div>
+                </div>
+                
+                <div class="gauge-wrapper" style="width: 90px; height: 90px; margin: 0; flex-shrink: 0;">
+                    <svg class="gauge-svg" style="width: 90px; height: 90px;">
+                        <circle class="gauge-bg" cx="45" cy="45" r="38" stroke-width="7" fill="transparent" />
+                        <circle class="gauge-fill" id="keywordProgressCircle" cx="45" cy="45" r="38" stroke-width="7" fill="transparent" stroke-dasharray="238.7" stroke-dashoffset="238.7" stroke-linecap="round" />
+                    </svg>
+                    <div class="gauge-inner-text">
+                        <span class="gauge-score-value" id="keywordMatchValue" style="font-size: 1.35rem;">68%</span>
+                        <span class="gauge-score-label" style="font-size: 0.55rem; color: var(--text-light); margin-top: 1px; text-transform: uppercase;">Match</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Suggestions Card -->
+            <div class="app-card" style="padding: 1.5rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                    <h3 class="feedback-title" style="margin:0; font-size: 1.05rem;">AI Suggestions</h3>
+                    <a href="javascript:void(0)" style="font-size:0.8rem; color:var(--accent-violet); text-decoration:none; font-weight:700; display:flex; align-items:center; gap:4px;">
+                        View All Suggestions 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+                
+                <div class="suggestions-list" id="suggestionsList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Bot Chat CTA Box -->
+            <a href="{% url 'ai_mentor:index' %}" class="ai-mentor-cta-card">
+                <div class="cta-message-box">
+                    <div class="cta-icon-box">
+                        <!-- Sparkles/Stars icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="cta-text">
+                        <h4>Need help improving your resume?</h4>
+                        <p>Chat with AI Mentor</p>
+                    </div>
+                </div>
+                <!-- Right arrow icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- AI Analysis Overlay Loader -->
+<div class="analysis-loading-overlay" id="analysisLoader">
+    <div class="loading-pulse-orb">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+    </div>
+    <div class="loading-title">Analyzing your resume...</div>
+    <div class="loading-subtitle" id="loaderTip">Scanning structures and keyword densities to determine your ATS profile.</div>
+</div>
+
+<!-- Fullscreen Resume Preview Modal -->
+<div class="fullscreen-modal-container" id="fullscreenPreviewModal">
+    <div class="fullscreen-modal-card">
+        <div class="modal-header">
+            <h3>Fullscreen Resume Preview</h3>
+            <button class="modal-close-btn" onclick="closeFullscreenPreview()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="resume-paper-page" id="resumePreviewPaperModal">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Global variable storing current analysis details
+    let currentAnalysisData = null;
+    let rawResumeText = ``;
+
+    let mockupData = null;
+    try {
+        mockupData = {{ resume_json|safe }};
+    } catch(e) {
+        console.error("Failed to load resume data", e);
+    }
+
+    // Initialize Page with DB State
+    document.addEventListener("DOMContentLoaded", () => {
+        if (mockupData) {
+            // Build initial text from mockupData for reanalysis fallback
+            try {
+                if (mockupData.parsed_resume && mockupData.parsed_resume.name) {
+                    let exp = (mockupData.parsed_resume.experience || []).map(e => `${e.role} at ${e.company} (${e.duration})\n` + (e.bullets || []).map(b => `- ${b}`).join('\n')).join('\n');
+                    let edu = (mockupData.parsed_resume.education || []).map(ed => `${ed.degree} - ${ed.institution} (${ed.duration}) - ${ed.gpa}`).join('\n');
+                    let skills = (mockupData.parsed_resume.skills || []).join(', ');
+                    rawResumeText = `${mockupData.parsed_resume.name}\n${mockupData.parsed_resume.role}\n${mockupData.parsed_resume.email} | ${mockupData.parsed_resume.phone} | ${mockupData.parsed_resume.location}\n\nSUMMARY\n${mockupData.parsed_resume.summary}\n\nSKILLS\n${skills}\n\nEXPERIENCE\n${exp}\n\nEDUCATION\n${edu}`;
+                }
+            } catch(e) { console.error(e); }
+            updateDashboardUI(mockupData);
+        }
+    });
+
+    // Helper to trigger file selector click
+    function triggerFileUpload() {
+        document.getElementById('resumeFileInput').click();
+    }
+
+    // Drag and drop handlers for status card
+    function handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById('fileStatusCard').classList.add('dragover');
+    }
+
+    // Drag leave handler
+    function handleDragLeave(e) {
+        e.preventDefault();
+        document.getElementById('fileStatusCard').classList.remove('dragover');
+    }
+
+    // Drop handler
+    function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById('fileStatusCard').classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            processUploadedFile(files[0]);
+        }
+    }
+
+    // Direct selection handler
+    function handleFileSelect(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            processUploadedFile(files[0]);
+        }
+    }
+
+    // Process file uploading & parsing
+    async function processUploadedFile(file) {
+        const name = file.name;
+        const sizeStr = formatBytes(file.size);
+        const now = new Date();
+        const dateStr = formatDate(now);
+        
+        showLoading(true);
+        updateLoadingTip("Uploading and parsing file content...");
+
+        try {
+            const formData = new FormData();
+            formData.append('resume', file);
+
+            updateLoadingTip("Uploading and analyzing resume with HerSakhi AI...");
+
+            // Send file to Django API backend
+            const response = await fetch("{% url 'resume_lab:upload_resume' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (result.success && result.analysis) {
+                // Update file status labels
+                document.getElementById('displayFileName').innerText = name;
+                document.getElementById('displayUploadMeta').innerText = `Uploaded on ${dateStr} · ${sizeStr}`;
+                document.getElementById('displayLastAnalyzed').innerText = `${dateStr} at ${formatTime(now)}`;
+
+                updateDashboardUI(result.analysis);
+            } else {
+                showToast("AI Analysis failed. " + (result.message || ""), "error");
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            showToast("Error analyzing resume. Please make sure the format is valid.", "error");
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Helper: read standard text file
+    function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsText(file);
+        });
+    }
+
+    // Helper: PDF.js client-side text extractor
+    async function extractTextFromPDF(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+        
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let fullText = "";
+        
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(" ");
+            fullText += pageText + "\n";
+        }
+        return fullText;
+    }
+
+    // Trigger reanalysis with existing file text (Disabled for now, needs backend support)
+    async function triggerReanalysis() {
+        if (!currentAnalysisData) {
+            showToast("Please upload a resume to re-analyze.", "error");
+            return;
+        }
+    }
+
+    // Update entire dashboard widgets with the analysis response data
+    function updateDashboardUI(data) {
+        currentAnalysisData = data;
+
+        // 1. ATS Score Gauge
+        const score = data.ats_score || 0;
+        document.getElementById('atsScoreValue').innerText = score;
+        
+        // Gauge offset: circumference = 2 * PI * r = 2 * 3.14159 * 58 = 364.4
+        const atsCircle = document.getElementById('atsProgressCircle');
+        const offset = 364.4 - (364.4 * score) / 100;
+        atsCircle.style.strokeDashoffset = offset;
+
+        // Score Label & color
+        const scoreLabel = document.getElementById('atsScoreLabel');
+        const scoreMsg = document.getElementById('atsScoreMessage');
+        const improvementBadge = document.getElementById('atsImprovementBadge');
+
+        if (score >= 80) {
+            scoreLabel.innerText = "Excellent";
+            scoreLabel.style.color = "var(--success)";
+            scoreMsg.innerText = "Excellent resume! Almost ready for submission.";
+            improvementBadge.innerText = `↑ ${100 - score} points to reach perfect score`;
+            improvementBadge.className = "gauge-badge success";
+        } else if (score >= 65) {
+            scoreLabel.innerText = "Good";
+            scoreLabel.style.color = "var(--success)";
+            scoreMsg.innerText = "Your resume is good, but can be better!";
+            improvementBadge.innerText = `↑ ${90 - score} points improvement possible`;
+            improvementBadge.className = "gauge-badge improvement";
+        } else {
+            scoreLabel.innerText = "Needs Work";
+            scoreLabel.style.color = "var(--warning)";
+            scoreMsg.innerText = "Significant improvements recommended.";
+            improvementBadge.innerText = `↑ ${85 - score} points improvement possible`;
+            improvementBadge.className = "gauge-badge improvement";
+        }
+
+        // 2. Score Breakdown progress bars
+        const breakdown = data.score_breakdown || {};
+        updateBreakdownBar('Format', breakdown.format || 0);
+        updateBreakdownBar('Content', breakdown.content || 0);
+        updateBreakdownBar('Skills', breakdown.skills || 0);
+        updateBreakdownBar('Experience', breakdown.experience || 0);
+        updateBreakdownBar('Keywords', breakdown.keywords || 0);
+
+        // 3. Strengths List
+        const strengthsList = document.getElementById('strengthsList');
+        strengthsList.innerHTML = "";
+        (data.strengths || []).forEach(str => {
+            const li = document.createElement('li');
+            li.className = "feedback-item strength-item";
+            li.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>${str}</span>
+            `;
+            strengthsList.appendChild(li);
+        });
+
+        // 4. Improvements List
+        const improvementsList = document.getElementById('improvementsList');
+        improvementsList.innerHTML = "";
+        (data.improvements || []).forEach(imp => {
+            const li = document.createElement('li');
+            li.className = "feedback-item improvement-item";
+            li.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>${imp}</span>
+            `;
+            improvementsList.appendChild(li);
+        });
+
+        // 5. Keyword Match
+        const matchVal = data.keyword_match || 0;
+        document.getElementById('keywordMatchValue').innerText = `${matchVal}%`;
+        document.getElementById('matchTargetRole').innerText = data.target_role || "Software Engineer";
+        
+        // Keyword offset: circumference = 2 * PI * r = 2 * 3.14159 * 38 = 238.7
+        const keywordCircle = document.getElementById('keywordProgressCircle');
+        const keyOffset = 238.7 - (238.7 * matchVal) / 100;
+        keywordCircle.style.strokeDashoffset = keyOffset;
+
+        const diffBadge = document.getElementById('keywordDiffBadge');
+        if (matchVal >= 80) {
+            diffBadge.innerText = `Great fit for target role!`;
+            diffBadge.style.color = "var(--success)";
+            diffBadge.style.backgroundColor = "var(--success-bg)";
+        } else {
+            diffBadge.innerText = `↑ ${80 - matchVal}% more keywords to add`;
+            diffBadge.style.color = "var(--success)";
+            diffBadge.style.backgroundColor = "var(--success-bg)";
+        }
+
+        // 6. AI Suggestions
+        const suggestionsList = document.getElementById('suggestionsList');
+        suggestionsList.innerHTML = "";
+        (data.suggestions || []).forEach((sug, idx) => {
+            const box = document.createElement('div');
+            box.className = "suggestion-item-box";
+            
+            const isHigh = sug.impact === 'High Impact';
+            const pillClass = isHigh ? 'high' : 'medium';
+            
+            box.innerHTML = `
+                <div class="suggestion-icon-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>
+                </div>
+                <div class="suggestion-content">
+                    <h4 class="suggestion-item-title">${sug.title}</h4>
+                    <p class="suggestion-item-desc">${sug.description}</p>
+                </div>
+                <span class="impact-pill ${pillClass}">${sug.impact}</span>
+            `;
+            suggestionsList.appendChild(box);
+        });
+
+        // 7. Resume Preview Paper content
+        const parsed = data.parsed_resume || {};
+        renderResumePaper(parsed, 'resumePreviewPaper');
+        renderResumePaper(parsed, 'resumePreviewPaperModal');
+    }
+
+    // Helper: update a single progress bar
+    function updateBreakdownBar(id, val) {
+        document.getElementById(`breakdownVal${id}`).innerText = `${val}/100`;
+        const fill = document.getElementById(`breakdownFill${id}`);
+        fill.style.width = `${val}%`;
+
+        // Update colors dynamically based on score
+        if (val >= 75) {
+            fill.style.backgroundColor = "var(--success)";
+            document.getElementById(`breakdownVal${id}`).style.color = "var(--success)";
+        } else if (val >= 60) {
+            fill.style.backgroundColor = "var(--warning)";
+            document.getElementById(`breakdownVal${id}`).style.color = "var(--warning)";
+        } else {
+            fill.style.backgroundColor = "var(--accent-pink)";
+            document.getElementById(`breakdownVal${id}`).style.color = "var(--accent-pink)";
+        }
+    }
+
+    // Helper: format resume content as clean HTML inside A4 paper sheet
+    function renderResumePaper(parsed, containerId) {
+        const c = document.getElementById(containerId);
+        if (!c) return;
+
+        if (!parsed || !parsed.name) {
+            c.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-light); text-align: center; padding: 4rem 2rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.5;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <h3 style="margin: 0 0 0.5rem; color: var(--text-dark);">No Resume Available</h3>
+                    <p style="margin: 0; font-size: 0.9rem;">Upload your resume to instantly see an AI-generated preview of its parsed content.</p>
+                </div>
+            `;
+            return;
+        }
+
+        let expHTML = "";
+        (parsed.experience || []).forEach(e => {
+            let bulletsHTML = "";
+            (e.bullets || []).forEach(b => {
+                bulletsHTML += `<li>${b}</li>`;
+            });
+
+            expHTML += `
+                <div class="resume-exp-item">
+                    <div class="resume-exp-title-row">
+                        <span>${e.role || ''}</span>
+                        <span class="resume-exp-company">${e.company || ''}</span>
+                    </div>
+                    <div class="resume-exp-meta-row">
+                        <span>${e.location || ''}</span>
+                        <span>${e.duration || ''}</span>
+                    </div>
+                    <ul class="resume-exp-bullets">
+                        ${bulletsHTML}
+                    </ul>
+                </div>
+            `;
+        });
+
+        let eduHTML = "";
+        (parsed.education || []).forEach(ed => {
+            eduHTML += `
+                <div class="resume-exp-item">
+                    <div class="resume-exp-title-row">
+                        <span>${ed.degree || ''}</span>
+                        <span>${ed.duration || ''}</span>
+                    </div>
+                    <div class="resume-exp-meta-row">
+                        <span>${ed.institution || ''}</span>
+                        <span>${ed.gpa || ''}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        let skillsHTML = "";
+        (parsed.skills || []).forEach(s => {
+            skillsHTML += `<span class="resume-skill-badge">${s}</span>`;
+        });
+
+        c.innerHTML = `
+            <div class="resume-name-header">
+                <h2>${parsed.name || ''}</h2>
+                ${parsed.role ? `<div class="resume-role-sub">${parsed.role}</div>` : ''}
+                <div class="resume-contact-info">
+                    ${parsed.email ? `<span>${parsed.email}</span>` : ''}
+                    ${parsed.email && parsed.phone ? `<span>•</span>` : ''}
+                    ${parsed.phone ? `<span>${parsed.phone}</span>` : ''}
+                    ${(parsed.email || parsed.phone) && parsed.location ? `<span>•</span>` : ''}
+                    ${parsed.location ? `<span>${parsed.location}</span>` : ''}
+                </div>
+                <div class="resume-contact-info" style="margin-top: 4px; justify-content: center;">
+                    ${parsed.linkedin ? `<span>${parsed.linkedin}</span>` : ''}
+                    ${parsed.linkedin && parsed.github ? `<span>•</span>` : ''}
+                    ${parsed.github ? `<span>${parsed.github}</span>` : ''}
+                </div>
+            </div>
+
+            ${parsed.summary ? `
+                <div class="resume-section-title">Professional Summary</div>
+                <p class="resume-summary-text">${parsed.summary}</p>
+            ` : ''}
+
+            ${skillsHTML ? `
+                <div class="resume-section-title">Skills</div>
+                <div class="resume-skills-grid">
+                    ${skillsHTML}
+                </div>
+            ` : ''}
+
+            ${expHTML ? `
+                <div class="resume-section-title">Experience</div>
+                ${expHTML}
+            ` : ''}
+
+            ${eduHTML ? `
+                <div class="resume-section-title">Education</div>
+                ${eduHTML}
+            ` : ''}
+        `;
+    }
+
+    // Modal full screen toggle
+    function openFullscreenPreview() {
+        document.getElementById('fullscreenPreviewModal').style.display = 'flex';
+    }
+
+    function closeFullscreenPreview() {
+        document.getElementById('fullscreenPreviewModal').style.display = 'none';
+    }
+
+    // Download Report triggered by button
+    function showDetailedAnalysisModal() {
+        if (!currentAnalysisData || !currentAnalysisData.ai_analysis) {
+            showToast("No analysis details to report. Please upload a resume first.", "error");
+            return;
+        }
+
+        const data = currentAnalysisData;
+        const reportText = `=====================================================
+HER SAKHI RESUME LAB - DETAILED AI ANALYSIS REPORT
+=====================================================
+Generated on: ${new Date().toLocaleString()}
+Target Role: ${data.target_role || "Software Engineer"}
+-----------------------------------------------------
+ATS SCORE: ${data.ats_score}/100 (${data.ats_score >= 80 ? 'Excellent' : data.ats_score >= 65 ? 'Good' : 'Needs Work'})
+Keyword Match: ${data.keyword_match}%
+
+SCORE BREAKDOWN:
+- Format: ${data.score_breakdown.format}/100
+- Content: ${data.score_breakdown.content}/100
+- Skills: ${data.score_breakdown.skills}/100
+- Experience: ${data.score_breakdown.experience}/100
+- Keywords: ${data.score_breakdown.keywords}/100
+
+TOP STRENGTHS:
+${data.strengths.map(s => `- ${s}`).join('\n')}
+
+NEEDS IMPROVEMENT:
+${data.improvements.map(i => `- ${i}`).join('\n')}
+
+RECOMMENDED AI SUGGESTIONS:
+${data.suggestions.map(s => `[${s.impact}] ${s.title}: ${s.description}`).join('\n')}
+=====================================================`;
+
+        const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${(data.parsed_resume.name || 'User').replace(/\s+/g, '_')}_Resume_Analysis_Report.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // UI Loading state helpers
+    function showLoading(show) {
+        const loader = document.getElementById('analysisLoader');
+        if (show) {
+            loader.classList.add('active');
+        } else {
+            loader.classList.remove('active');
+        }
+    }
+
+    function updateLoadingTip(text) {
+        document.getElementById('loaderTip').innerText = text;
+    }
+
+    // Date/Time Formatter Helpers
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = 1;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    // Date formatter
+    function formatDate(date) {
+        const day = date.getDate();
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = months[date.getMonth()];
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
+    }
+
+    // Time formatter
+    function formatTime(date) {
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+</script>
+{% endblock %}

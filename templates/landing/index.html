@@ -1,0 +1,557 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <!-- ============================ -->
+  <!-- MESH GRADIENT BACKGROUND    -->
+  <!-- ============================ -->
+  <canvas id="mesh-gradient-hero" class="mesh-gradient mesh-gradient--hero"></canvas>
+  <canvas id="mesh-gradient-companion" class="mesh-gradient mesh-gradient--companion"></canvas>
+
+  <!-- ============================ -->
+  <!-- NAVIGATION                   -->
+  <!-- ============================ -->
+  <nav id="nav" class="nav">
+    <div class="nav__container">
+      <a href="#hero" class="nav__logo">
+        <img src="{% static 'images/logo.png' %}" alt="HerSakhi" class="nav__logo-img" />
+      </a>
+      <ul class="nav__links">
+        <li><a href="#hero" class="nav__link nav__link--active">Home</a></li>
+        <li><a href="#features" class="nav__link">Features</a></li>
+        <li><a href="#how-it-works" class="nav__link">How It Works</a></li>
+        <li><a href="#who-is" class="nav__link">About</a></li>
+        <li><a href="#final-cta" class="nav__link">Contact</a></li>
+      </ul>
+      <a href="{% url 'accounts:signup' %}" class="nav__cta btn-primary">Get Started</a>
+      <button class="nav__hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <div class="nav__mobile-menu">
+      <ul class="nav__mobile-links">
+        <li><a href="#hero" class="nav__mobile-link">Home</a></li>
+        <li><a href="#features" class="nav__mobile-link">Features</a></li>
+        <li><a href="#how-it-works" class="nav__mobile-link">How It Works</a></li>
+        <li><a href="#who-is" class="nav__mobile-link">About</a></li>
+        <li><a href="#final-cta" class="nav__mobile-link">Contact</a></li>
+      </ul>
+      <a href="{% url 'accounts:signup' %}" class="nav__mobile-cta btn-primary">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- ============================ -->
+  <!-- MAIN CONTENT                 -->
+  <!-- ============================ -->
+  <main>
+
+    <!-- ============================ -->
+    <!-- HERO SECTION                 -->
+    <!-- ============================ -->
+    <section id="hero" class="hero">
+      <div class="hero__container container">
+        <div class="hero__left">
+          <div class="hero__badge">
+            <span class="hero__badge-text">AI CAREER COMPANION FOR WOMEN</span>
+          </div>
+          <h1 class="hero__headline">
+            <span class="hero__headline-static">Empowering</span><br />
+            <span class="hero__headline-pink" id="headline-cycle">Dreams</span><span class="hero__headline-pink">.</span>
+          </h1>
+          <p class="hero__description">
+            Your AI-powered companion to navigate skills, career paths and opportunities.
+          </p>
+          <div class="hero__ctas">
+            <a href="{% url 'accounts:signup' %}" class="btn-primary btn-hero magnetic-btn">
+              <span>Start Your Journey</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn-glass btn-hero magnetic-btn">
+              <span>See How It Works</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </a>
+          </div>
+          <div class="hero__quote">
+            <blockquote class="hero-quote">
+              <p>"The future belongs to those who believe in the beauty of their dreams."</p>
+              <cite>— Eleanor Roosevelt</cite>
+            </blockquote>
+          </div>
+        </div>
+        <div class="hero__right">
+          <div class="crystal-scene">
+            <div class="crystal-pedestal">
+              <div class="pedestal-ring pedestal-ring--outer"></div>
+              <div class="pedestal-ring pedestal-ring--middle"></div>
+              <div class="pedestal-ring pedestal-ring--inner"></div>
+            </div>
+            <div class="crystal-orbit">
+              <div id="hero-canvas-container" class="hero-canvas-container" data-model-url="{% static 'models/Untitled.glb' %}" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10;"></div>
+              
+              <!-- Floating Cards -->
+              <div class="floating-card float-resume">
+                <div class="fc-icon fc-icon--purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">Resume</span>
+                  <span class="fc-subtitle">Optimize</span>
+                </div>
+              </div>
+              <div class="floating-card float-goals">
+                <div class="fc-icon fc-icon--pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">Goals</span>
+                  <span class="fc-subtitle">Plan Ahead</span>
+                </div>
+              </div>
+              <div class="floating-card float-skills">
+                <div class="fc-icon fc-icon--purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">Skills</span>
+                  <span class="fc-subtitle">Upgrade</span>
+                </div>
+              </div>
+              <div class="floating-card float-internships">
+                <div class="fc-icon fc-icon--blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">Internships</span>
+                  <span class="fc-subtitle">Find Opportunities</span>
+                </div>
+              </div>
+              <div class="floating-card float-achievements">
+                <div class="fc-icon fc-icon--purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10M17 4v3c0 2.8-2.2 5-5 5s-5-2.2-5-5V4"/><path d="M7 4H4v3c0 2.8 2.2 5 5 5M17 4h3v3c0 2.8-2.2 5-5 5"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">Achievements</span>
+                  <span class="fc-subtitle">Track Progress</span>
+                </div>
+              </div>
+              <div class="floating-card float-mentor">
+                <div class="fc-icon fc-icon--blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg></div>
+                <div class="fc-text">
+                  <span class="fc-title">AI Mentor</span>
+                  <span class="fc-subtitle">Guides You</span>
+                </div>
+              </div>
+              
+              <!-- Orbital Rings & Particles -->
+              <div class="crystal-ring ring-1">
+                 <div class="particle p1"></div>
+              </div>
+              <div class="crystal-ring ring-2">
+                 <div class="particle p2"></div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ -->
+    <!-- WHO IS HERSAKHI?             -->
+    <!-- ============================ -->
+    <section id="who-is" class="who-is section">
+      <div class="container who-is__container">
+        <div class="who-is__left">
+          <p class="label who-is__label">WHO IS HERSAKHI?</p>
+          <h2 class="heading-2 who-is__headline">Your Personal AI Career Architect</h2>
+          <p class="body-lg who-is__body">
+            HerSakhi understands your unique journey. From resume optimization to skill gap analysis, from internship matching to leadership coaching — every feature is designed to accelerate your career growth.
+          </p>
+          <div class="who-is__quote">
+            <blockquote class="who-is-quote">
+              <p>"There is no limit to what we, as women, can accomplish."</p>
+              <cite>— Michelle Obama</cite>
+            </blockquote>
+          </div>
+        </div>
+        <div class="who-is__right">
+          <div class="dashboard-panel" id="dashboard-panel">
+            <div class="dash-card dash-card--score" id="dash-card-1">
+              <div class="dash-card__accent"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <span class="dash-card__title">Career Score</span>
+              </div>
+              <div class="dash-card__content">
+                <svg class="progress-ring" viewBox="0 0 120 120">
+                  <circle class="progress-ring__bg" cx="60" cy="60" r="50"/>
+                  <circle class="progress-ring__fill" cx="60" cy="60" r="50" id="progress-ring-fill"/>
+                </svg>
+                <span class="progress-number" id="career-score">86</span>
+              </div>
+            </div>
+            <div class="dash-card dash-card--skills" id="dash-card-2">
+              <div class="dash-card__accent dash-card__accent--blue"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                <span class="dash-card__title">Skills Radar</span>
+              </div>
+              <div class="dash-card__content">
+                <svg class="radar-chart" viewBox="0 0 100 100">
+                  <polygon class="radar-grid" points="50,10 90,40 75,90 25,90 10,40"/>
+                  <polygon class="radar-fill" points="50,25 75,42 65,75 35,75 22,42" id="radar-fill"/>
+                </svg>
+              </div>
+            </div>
+            <div class="dash-card dash-card--resume" id="dash-card-3">
+              <div class="dash-card__accent"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span class="dash-card__title">Resume</span>
+              </div>
+              <div class="dash-card__content">
+                <span class="dash-badge dash-badge--success">Optimized</span>
+              </div>
+            </div>
+            <div class="dash-card dash-card--roadmap" id="dash-card-4">
+              <div class="dash-card__accent dash-card__accent--blue"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="dash-card__title">Roadmap</span>
+              </div>
+              <div class="dash-card__content">
+                <div class="mini-timeline">
+                  <div class="mini-timeline__node mini-timeline__node--active"></div>
+                  <div class="mini-timeline__line"></div>
+                  <div class="mini-timeline__node mini-timeline__node--active"></div>
+                  <div class="mini-timeline__line"></div>
+                  <div class="mini-timeline__node"></div>
+                </div>
+              </div>
+            </div>
+            <div class="dash-card dash-card--goals" id="dash-card-5">
+              <div class="dash-card__accent"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                <span class="dash-card__title">Goals</span>
+              </div>
+              <div class="dash-card__content">
+                <div class="mini-checklist">
+                  <div class="check-item check-item--checked">
+                    <span class="check-box">✓</span>
+                    <span>Update Resume</span>
+                  </div>
+                  <div class="check-item check-item--checked">
+                    <span class="check-box">✓</span>
+                    <span>Learn Python</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dash-card dash-card--opportunities" id="dash-card-6">
+              <div class="dash-card__accent dash-card__accent--blue"></div>
+              <div class="dash-card__header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <span class="dash-card__title">Opportunities</span>
+              </div>
+              <div class="dash-card__content">
+                <div class="mini-opps">
+                  <div class="mini-opp">
+                    <span class="mini-opp__co">G</span>
+                    <span class="mini-opp__role">Product Intern</span>
+                  </div>
+                  <div class="mini-opp">
+                    <span class="mini-opp__co">M</span>
+                    <span class="mini-opp__role">UX Designer</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ -->
+    <!-- AI CAREER COMPANION          -->
+    <!-- ============================ -->
+    <section id="ai-companion" class="ai-companion">
+      <div class="ai-companion__scroll-runway" id="ai-scroll-runway">
+        <div class="ai-companion__sticky" id="ai-sticky">
+          <div class="ai-companion__container" id="ai-container">
+            <!-- Phase 1: Orb -->
+            <div class="ai-orb-wrapper" id="ai-orb-wrapper">
+              <div class="ai-orb" id="ai-orb"></div>
+            </div>
+            <!-- Phase 3-4: Dashboard -->
+            <div class="ai-dashboard" id="ai-dashboard">
+              <div class="ai-dashboard__header glass-card" id="ai-dash-header">
+                <div class="ai-live-indicator">
+                  <span class="ai-live-dot"></span>
+                  <span>HerSakhi AI</span>
+                </div>
+                <span class="ai-dashboard__subtitle">Your Career Companion</span>
+              </div>
+              <div class="ai-dashboard__sidebar-left" id="ai-dash-left">
+                <div class="glass-card ai-score-card" id="ai-score-card">
+                  <span class="ai-score-label">Career Readiness</span>
+                  <span class="ai-score-number" id="ai-score-number">72</span>
+                  <svg class="ai-score-ring" viewBox="0 0 120 120">
+                    <circle class="ai-score-ring__bg" cx="60" cy="60" r="50"/>
+                    <circle class="ai-score-ring__fill" cx="60" cy="60" r="50" id="ai-score-ring-fill"/>
+                  </svg>
+                  <span class="ai-score-trend">↑ 12%</span>
+                </div>
+                <div class="glass-card ai-skills-card" id="ai-skills-card">
+                  <h4>Skills</h4>
+                  <div class="ai-skill-bar"><span>Communication</span><div class="ai-bar"><div class="ai-bar__fill" style="width:85%"></div></div></div>
+                  <div class="ai-skill-bar"><span>Leadership</span><div class="ai-bar"><div class="ai-bar__fill" style="width:70%"></div></div></div>
+                  <div class="ai-skill-bar"><span>Technical</span><div class="ai-bar"><div class="ai-bar__fill" style="width:78%"></div></div></div>
+                  <div class="ai-skill-bar"><span>Networking</span><div class="ai-bar"><div class="ai-bar__fill" style="width:65%"></div></div></div>
+                  <div class="ai-skill-bar"><span>Strategy</span><div class="ai-bar"><div class="ai-bar__fill" style="width:60%"></div></div></div>
+                </div>
+              </div>
+              <div class="glass-card ai-analyzer-card" id="ai-analyzer-card">
+                <div class="ai-analyzer__icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <span class="ai-analyzer__status" id="ai-analyzer-status">Scanning</span>
+                <span class="ai-analyzer__score" id="ai-analyzer-score">72</span>
+                <div class="ai-analyzer__checks" id="ai-analyzer-checks">
+                  <div class="ai-check"><span class="ai-check__box"></span><span>Format optimized</span></div>
+                  <div class="ai-check"><span class="ai-check__box"></span><span>Keywords matched</span></div>
+                  <div class="ai-check"><span class="ai-check__box"></span><span>Impact statements added</span></div>
+                </div>
+              </div>
+              <div class="ai-dashboard__sidebar-right" id="ai-dash-right">
+                <div class="glass-card ai-roadmap-card" id="ai-roadmap-card">
+                  <h4>Career Roadmap</h4>
+                  <div class="ai-roadmap">
+                    <div class="ai-roadmap__item" id="ai-rm-1">
+                      <div class="ai-roadmap__node"></div>
+                      <span>Assessment</span>
+                    </div>
+                    <div class="ai-roadmap__connector" id="ai-rm-conn-1"></div>
+                    <div class="ai-roadmap__item" id="ai-rm-2">
+                      <div class="ai-roadmap__node"></div>
+                      <span>Skills</span>
+                    </div>
+                    <div class="ai-roadmap__connector" id="ai-rm-conn-2"></div>
+                    <div class="ai-roadmap__item" id="ai-rm-3">
+                      <div class="ai-roadmap__node"></div>
+                      <span>Resume</span>
+                    </div>
+                    <div class="ai-roadmap__connector" id="ai-rm-conn-3"></div>
+                    <div class="ai-roadmap__item" id="ai-rm-4">
+                      <div class="ai-roadmap__node"></div>
+                      <span>Internship</span>
+                    </div>
+                    <div class="ai-roadmap__connector" id="ai-rm-conn-4"></div>
+                    <div class="ai-roadmap__item" id="ai-rm-5">
+                      <div class="ai-roadmap__node"></div>
+                      <span>Dream Job</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="glass-card ai-goals-card" id="ai-goals-card">
+                  <h4>Goals</h4>
+                  <div class="ai-goal"><span class="ai-goal__check"></span><span>Complete AI Assessment</span></div>
+                  <div class="ai-goal"><span class="ai-goal__check"></span><span>Update LinkedIn Profile</span></div>
+                  <div class="ai-goal"><span class="ai-goal__check"></span><span>Apply to 5 Internships</span></div>
+                  <div class="ai-goals__progress"><div class="ai-goals__progress-bar" id="ai-goals-bar"></div></div>
+                </div>
+              </div>
+              <div class="glass-card ai-opps-card" id="ai-opps-card">
+                <h4>Opportunity Hub</h4>
+                <div class="ai-opp-item" id="ai-opp-1">
+                  <span class="ai-opp__logo">G</span>
+                  <div class="ai-opp__info">
+                    <span class="ai-opp__role">Product Intern</span>
+                    <span class="ai-opp__co">Google</span>
+                  </div>
+                  <span class="ai-opp__match">98%</span>
+                </div>
+                <div class="ai-opp-item" id="ai-opp-2">
+                  <span class="ai-opp__logo">M</span>
+                  <div class="ai-opp__info">
+                    <span class="ai-opp__role">UX Designer</span>
+                    <span class="ai-opp__co">Microsoft</span>
+                  </div>
+                  <span class="ai-opp__match">95%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ -->
+    <!-- FEATURES                     -->
+    <!-- ============================ -->
+    <section id="features" class="features section">
+      <div class="container">
+        <div class="features__header">
+          <p class="label features__label">FEATURES</p>
+          <h2 class="heading-2 features__headline">Everything You Need to Build Your Career</h2>
+          <p class="body-lg features__subhead">
+            Six powerful AI-driven tools designed to guide you at every career stage.
+          </p>
+        </div>
+        <div class="features__grid">
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--violet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2 6.3-6.4 2.1 2-6.3z"/></svg>
+            </div>
+            <h3 class="feature-card__title">Personalized Career Guidance</h3>
+            <p class="feature-card__desc">AI-powered career recommendations based on your skills, interests, and market trends.</p>
+          </div>
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h3 class="feature-card__title">Resume Intelligence</h3>
+            <p class="feature-card__desc">Smart resume analysis with real-time scoring and actionable improvement suggestions.</p>
+          </div>
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--violet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            </div>
+            <h3 class="feature-card__title">Skill Gap Analysis</h3>
+            <p class="feature-card__desc">Identify missing skills for your dream role and get a personalized learning roadmap.</p>
+          </div>
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+            <h3 class="feature-card__title">Visual Career Roadmap</h3>
+            <p class="feature-card__desc">A clear, step-by-step visual plan from where you are to where you want to be.</p>
+          </div>
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--violet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            </div>
+            <h3 class="feature-card__title">24/7 AI Mentor</h3>
+            <p class="feature-card__desc">Get instant answers, feedback, and mentorship whenever you need it.</p>
+          </div>
+          <div class="feature-card glass-card">
+            <div class="feature-card__icon feature-card__icon--blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <h3 class="feature-card__title">Opportunity Hub</h3>
+            <p class="feature-card__desc">Curated internships, jobs, and scholarships matched to your profile and goals.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ -->
+    <!-- HOW IT WORKS                 -->
+    <!-- ============================ -->
+    <section id="how-it-works" class="how-it-works section">
+      <div class="container">
+        <div class="how-it-works__header">
+          <p class="label how-it-works__label">HOW IT WORKS</p>
+          <h2 class="heading-2 how-it-works__headline">Your Journey in 4 Steps</h2>
+          <p class="body-lg how-it-works__subhead">From signup to your dream role — a clear path forward.</p>
+        </div>
+        <div class="how-it-works__steps">
+          <div class="connector-line" id="connector-line"></div>
+          <div class="step-card glass-card" id="step-1">
+            <span class="step-card__number">01</span>
+            <div class="step-card__content">
+              <div class="step-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+              </div>
+              <h3 class="step-card__title">Create Your Profile</h3>
+              <p class="step-card__desc">Tell us about your education, skills, interests, and career aspirations.</p>
+            </div>
+            <div class="step-card__visual">
+              <div class="step-visual step-visual--profile"></div>
+            </div>
+          </div>
+          <div class="step-card glass-card" id="step-2">
+            <span class="step-card__number">02</span>
+            <div class="step-card__content">
+              <div class="step-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg>
+              </div>
+              <h3 class="step-card__title">AI Assessment</h3>
+              <p class="step-card__desc">Our AI analyzes your profile, identifies strengths, and maps skill gaps.</p>
+            </div>
+            <div class="step-card__visual">
+              <div class="step-visual step-visual--radar"></div>
+            </div>
+          </div>
+          <div class="step-card glass-card" id="step-3">
+            <span class="step-card__number">03</span>
+            <div class="step-card__content">
+              <div class="step-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              </div>
+              <h3 class="step-card__title">Get Your Roadmap</h3>
+              <p class="step-card__desc">Receive a personalized, step-by-step career plan with actionable milestones.</p>
+            </div>
+            <div class="step-card__visual">
+              <div class="step-visual step-visual--roadmap"></div>
+            </div>
+          </div>
+          <div class="step-card glass-card" id="step-4">
+            <span class="step-card__number">04</span>
+            <div class="step-card__content">
+              <div class="step-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+              </div>
+              <h3 class="step-card__title">Land Opportunities</h3>
+              <p class="step-card__desc">Access curated internships, jobs, and scholarships matched to your goals.</p>
+            </div>
+            <div class="step-card__visual">
+              <div class="step-visual step-visual--rocket"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ -->
+    <!-- FINAL CTA                    -->
+    <!-- ============================ -->
+    <section id="final-cta" class="final-cta section">
+      <canvas id="mesh-gradient-cta" class="mesh-gradient mesh-gradient--cta"></canvas>
+      <div class="final-cta__panel glass-panel" id="cta-panel">
+        <h2 class="final-cta__headline heading-1">Ready to Build Your Future?</h2>
+        <p class="final-cta__subhead body-lg">
+          Join thousands of women already transforming their careers with AI-powered guidance.
+        </p>
+        <a href="{% url 'accounts:signup' %}" class="final-cta__btn btn-primary btn-primary--large magnetic-btn" id="cta-btn">
+          <span>Get Started Free</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <p class="final-cta__note caption">No credit card required. Free to get started.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================ -->
+  <!-- FOOTER                       -->
+  <!-- ============================ -->
+  <footer id="footer" class="footer">
+    <div class="container footer__container">
+      <div class="footer__top">
+        <img src="{% static 'images/logo.png' %}" alt="HerSakhi" class="footer__logo" />
+        <ul class="footer__links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#who-is">About</a></li>
+          <li><a href="#final-cta">Contact</a></li>
+        </ul>
+        <div class="footer__socials">
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a href="#" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></a>
+          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></a>
+        </div>
+      </div>
+      <div class="footer__divider"></div>
+      <div class="footer__bottom">
+        <p class="footer__copyright caption">&copy; 2024 HerSakhi. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+{% endblock %}

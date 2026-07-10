@@ -1,0 +1,725 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Achievements — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Header & Stats */
+.achievements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.header-text h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-dark);
+}
+.header-text p {
+    color: var(--text-light);
+    margin: 0;
+    font-size: 0.95rem;
+}
+.header-graphic {
+    position: absolute;
+    right: 0;
+    top: -40px;
+    height: 140px;
+    width: 300px;
+    background: radial-gradient(ellipse at center, rgba(143, 87, 255, 0.15) 0%, transparent 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.trophy-icon {
+    width: 80px;
+    height: 80px;
+    color: var(--accent-violet);
+    filter: drop-shadow(0 10px 15px rgba(143, 87, 255, 0.4));
+}
+
+.stats-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+.stats-container::-webkit-scrollbar {
+    height: 6px;
+}
+.stats-container::-webkit-scrollbar-thumb {
+    background: rgba(143, 87, 255, 0.2);
+    border-radius: 3px;
+}
+.stat-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 220px;
+    flex: 1;
+}
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+}
+.stat-icon.purple { background: rgba(143, 87, 255, 0.1); color: #8F57FF; }
+.stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+.stat-icon.green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.stat-icon.yellow { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+
+.stat-info h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+}
+.stat-info .stat-name {
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    font-weight: 600;
+    margin: 2px 0;
+}
+.stat-info .stat-desc {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+/* Layout */
+.achievements-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+}
+
+/* Left Column */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+.section-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+}
+.section-header a {
+    font-size: 0.8rem;
+    color: var(--accent-violet);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Badges */
+.badges-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.badges-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+.badge-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    padding: 1rem 0.5rem;
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+.badge-item:hover {
+    background: rgba(143, 87, 255, 0.02);
+}
+.badge-icon-wrap {
+    position: relative;
+    margin-bottom: 0.75rem;
+}
+.badge-icon-wrap svg {
+    width: 64px;
+    height: 64px;
+}
+.badge-check {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: #10B981;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+.badge-check svg {
+    width: 10px;
+    height: 10px;
+}
+.badge-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 4px 0;
+}
+.badge-desc {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    margin: 0 0 6px 0;
+    line-height: 1.3;
+}
+.badge-date {
+    font-size: 0.65rem;
+    color: #A1A5B7;
+}
+
+/* Recent Achievements */
+.recent-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    padding: 1.5rem;
+}
+.recent-list {
+    display: flex;
+    flex-direction: column;
+}
+.recent-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #F3F4F6;
+}
+.recent-item:last-child {
+    border-bottom: none;
+}
+.recent-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.recent-icon svg { width: 18px; height: 18px; }
+.recent-icon.green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.recent-icon.purple { background: rgba(143, 87, 255, 0.1); color: #8F57FF; }
+.recent-icon.orange { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.recent-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+
+.recent-info {
+    flex: 1;
+}
+.recent-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.recent-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+.recent-xp {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #10B981;
+}
+.recent-date {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    width: 90px;
+    text-align: right;
+}
+.show-more {
+    text-align: center;
+    padding-top: 1rem;
+}
+.show-more a {
+    font-size: 0.8rem;
+    color: var(--accent-violet);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Right Column Widgets */
+.widget-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+.widget-header h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+}
+.dropdown-text {
+    font-size: 0.75rem;
+    color: var(--accent-violet);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+/* Progress Overview */
+.progress-overview {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+.circular-progress {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(var(--accent-violet) 72%, #F3F4F6 0);
+    position: relative;
+    flex-shrink: 0;
+}
+.circular-progress::before {
+    content: "";
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: var(--card-bg);
+    border-radius: 50%;
+}
+.circular-progress .percentage {
+    position: relative;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+}
+.progress-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+}
+.progress-info p {
+    margin: 0 0 10px 0;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.progress-info a {
+    font-size: 0.75rem;
+    color: var(--accent-violet);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Category Progress */
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cat-icon svg { width: 16px; height: 16px; }
+.cat-icon.green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.cat-icon.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+.cat-icon.orange { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.cat-icon.purple { background: rgba(143, 87, 255, 0.1); color: #8F57FF; }
+.cat-details {
+    flex: 1;
+}
+.cat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.cat-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.cat-score {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+.cat-bar-track {
+    height: 6px;
+    background: #F3F4F6;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.cat-bar-fill {
+    height: 100%;
+    background: var(--accent-violet);
+    border-radius: 3px;
+}
+
+/* Milestone */
+.milestone-content {
+    display: flex;
+    gap: 1rem;
+}
+.milestone-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(245, 158, 11, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F59E0B;
+    flex-shrink: 0;
+}
+.milestone-icon svg {
+    width: 28px;
+    height: 28px;
+}
+.milestone-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+.milestone-info p {
+    margin: 0 0 12px 0;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    line-height: 1.4;
+}
+.milestone-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.milestone-progress .cat-bar-track {
+    flex: 1;
+}
+.milestone-progress-text {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    
+    <!-- Header -->
+    <div class="achievements-header">
+        <div class="header-text">
+            <h1>Achievements</h1>
+            <p>Celebrate your progress and milestones on your learning journey.</p>
+        </div>
+        <div class="header-graphic">
+            <svg class="trophy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-icon purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+            </div>
+            <div class="stat-info">
+                <h2>{{ total_achievements }}</h2>
+                <div class="stat-name">Achievements</div>
+                <div class="stat-desc">Keep it up!</div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c-2.28 0-3-1.62-3-3a3 3 0 0 1 3-3c-1.34 3 2.14 3.93 2.14 7a2.5 2.5 0 1 1-4.64 1.5"/><path d="M12 22a8 8 0 1 1 8-8c0 3.33-2.18 5-4.5 5S12 18 12 18s-1.18 1-3.5 1A4.5 4.5 0 0 1 4 14.5c0-3.3 2-6.5 4-8.5"/></svg>
+            </div>
+            <div class="stat-info">
+                <h2>{{ day_streak }}</h2>
+                <div class="stat-name">Day Streak</div>
+                <div class="stat-desc">On fire! 🔥</div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <div class="stat-info">
+                <h2>{{ skills_mastered }}</h2>
+                <div class="stat-name">Skills Mastered</div>
+                <div class="stat-desc">Based on your profile</div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon yellow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="stat-info">
+                <h2>{{ profile_progress }}%</h2>
+                <div class="stat-name">Profile Progress</div>
+                <div class="stat-desc">How complete your profile is</div>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <div class="stat-info">
+                <h2>{{ career_readiness }}%</h2>
+                <div class="stat-name">Career Readiness</div>
+                <div class="stat-desc">Based on your current progress</div>
+                <div class="stat-desc">Among all learners</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="achievements-layout">
+        
+        <!-- Left Column -->
+        <div>
+            <!-- Your Badges -->
+            <div class="badges-card">
+                <div class="section-header">
+                    <h3>Your Badges</h3>
+                    <a href="#">View All Badges &rarr;</a>
+                </div>
+                <div class="badges-grid">
+                    {% if badges %}
+                        {% for achievement in badges %}
+                            <div class="badge-item">
+                                <div class="badge-icon-wrap">
+                                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#grad1)"/>
+                                        <path d="M50 35L54.5 44H64.5L56.5 50L59.5 59L50 53.5L40.5 59L43.5 50L35.5 44H45.5L50 35Z" fill="white"/>
+                                        <defs>
+                                            <linearGradient id="grad1" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                                <stop stop-color="#8F57FF"/>
+                                                <stop offset="1" stop-color="#693AE9"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                    <div class="badge-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                </div>
+                                <h4 class="badge-title">{{ achievement.title }}</h4>
+                                <p class="badge-desc">{{ achievement.description }}</p>
+                                <span class="badge-date">{{ achievement.unlocked_at|date:'M d, Y' }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="badge-item">
+                            <div class="badge-icon-wrap">
+                                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M50 10L15 25V50C15 72.5 30 92.5 50 100C70 92.5 85 72.5 85 50V25L50 10Z" fill="url(#grad1)"/>
+                                    <defs>
+                                        <linearGradient id="grad1" x1="50" y1="10" x2="50" y2="100" gradientUnits="userSpaceOnUse">
+                                            <stop stop-color="#8F57FF"/>
+                                            <stop offset="1" stop-color="#693AE9"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="badge-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            </div>
+                            <h4 class="badge-title">No badges yet</h4>
+                            <p class="badge-desc">Complete a task to unlock your first badge.</p>
+                            <span class="badge-date">—</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+            <!-- Recent Achievements -->
+            <div class="recent-card">
+                <div class="section-header">
+                    <h3>Recent Achievements</h3>
+                    <a href="#">View All &gt;</a>
+                </div>
+                <div class="recent-list">
+                    {% if recent_achievements %}
+                        {% for achievement in recent_achievements %}
+                            <div class="recent-item">
+                                <div class="recent-icon {{ achievement.icon|default:'blue' }}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <circle cx="12" cy="12" r="6"/>
+                                        <circle cx="12" cy="12" r="2"/>
+                                    </svg>
+                                </div>
+                                <div class="recent-info">
+                                    <h4>{{ achievement.title }}</h4>
+                                    <p>{{ achievement.description }}</p>
+                                </div>
+                                <div class="recent-xp">+0 XP</div>
+                                <div class="recent-date">{{ achievement.unlocked_at|date:'M d, Y' }}</div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="recent-item">
+                            <div class="recent-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            </div>
+                            <div class="recent-info">
+                                <h4>No recent achievements yet</h4>
+                                <p>Complete an activity to see your recent achievement history.</p>
+                            </div>
+                            <div class="recent-xp">—</div>
+                            <div class="recent-date">—</div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="show-more">
+                    <a href="#">Show More <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <!-- Progress Overview -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>Progress Overview</h3>
+                    <div class="dropdown-text">
+                        This Month <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+                </div>
+                <div class="progress-overview">
+                    <div class="circular-progress" style="background: conic-gradient(var(--accent-violet) {{ progress_percent }}%, #F3F4F6 0);">
+                        <span class="percentage">{{ progress_percent }}%</span>
+                    </div>
+                    <div class="progress-info">
+                        <h4>Achievement Progress</h4>
+                        <p>{{ milestone_progress }} / 25 achievements</p>
+                        <a href="#">View Progress &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>Achievements by Category</h3>
+                </div>
+                <div class="category-list">
+                    {% if categories %}
+                        {% for category in categories %}
+                            <div class="category-item">
+                                <div class="cat-icon {{ category.color }}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                                </div>
+                                <div class="cat-details">
+                                    <div class="cat-header">
+                                        <span class="cat-name">{{ category.name }}</span>
+                                        <span class="cat-score">{{ category.count }} / {{ total_achievements }}</span>
+                                    </div>
+                                    <div class="cat-bar-track">
+                                        <div class="cat-bar-fill" style="width: {{ category.percentage }}%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="category-item">
+                            <div class="cat-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+                            </div>
+                            <div class="cat-details">
+                                <div class="cat-header">
+                                    <span class="cat-name">No categories yet</span>
+                                    <span class="cat-score">0 / 0</span>
+                                </div>
+                                <div class="cat-bar-track">
+                                    <div class="cat-bar-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Next Milestone -->
+            <div class="widget-card">
+                <div class="widget-header">
+                    <h3>Next Milestone</h3>
+                </div>
+                <div class="milestone-content">
+                    <div class="milestone-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="milestone-info">
+                        <h4>{{ next_milestone_title }}</h4>
+                        <p>{{ next_milestone_description }}</p>
+                        <div class="milestone-progress">
+                            <div class="cat-bar-track">
+                                <div class="cat-bar-fill" style="width: {{ progress_percent }}%;"></div>
+                            </div>
+                            <div class="milestone-progress-text">{{ milestone_progress }} / 25</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

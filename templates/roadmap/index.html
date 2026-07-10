@@ -1,0 +1,1459 @@
+{% extends 'app_base.html' %}
+{% load static %}
+
+{% block title %}Career Roadmap — HerSakhi{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Roadmap Page Layout & Theme */
+    .roadmap-container {
+        padding: 0.5rem 2.5rem 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        box-sizing: border-box;
+    }
+
+    /* Top metrics styling */
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.25rem;
+    }
+    .metric-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 1.1rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: var(--card-shadow);
+    }
+    .metric-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .metric-icon-box.role-icon {
+        background: rgba(143, 87, 255, 0.08);
+        color: var(--accent-violet);
+    }
+    .metric-icon-box.timeline-icon {
+        background: rgba(233, 67, 150, 0.08);
+        color: var(--accent-pink);
+    }
+    .metric-icon-box.progress-icon {
+        background: rgba(34, 197, 94, 0.08);
+        color: var(--success);
+    }
+    .metric-icon-box.completion-icon {
+        background: rgba(245, 158, 11, 0.08);
+        color: var(--warning);
+    }
+    .metric-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        flex: 1;
+    }
+    .metric-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    .metric-value {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-top: 2px;
+        font-family: 'Sora', sans-serif;
+    }
+    .metric-progress-bar {
+        width: 100%;
+        height: 6px;
+        background: #EEF0F7;
+        border-radius: 3px;
+        margin-top: 6px;
+        overflow: hidden;
+    }
+    .metric-progress-fill {
+        height: 100%;
+        background: var(--success);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+    }
+
+    /* Horizontal Pipeline styling */
+    .pipeline-container {
+        position: relative;
+        padding: 1.5rem 0;
+        margin: 1rem 0;
+    }
+    .pipeline-track {
+        position: absolute;
+        top: calc(50% - 10px);
+        left: 8%;
+        right: 8%;
+        height: 3px;
+        background: #E4E6EF;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+    .pipeline-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        z-index: 2;
+    }
+    .pipeline-step-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background: var(--app-bg);
+        padding: 0 10px;
+    }
+    .pipeline-node-circle {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #FFFFFF;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.08);
+        font-weight: bold;
+        transition: all 0.25s ease;
+        background: white;
+    }
+    .pipeline-node-circle.completed {
+        background: var(--success);
+        color: white;
+    }
+    .pipeline-node-circle.completed-blue {
+        background: #2563EB;
+        color: white;
+    }
+    .pipeline-node-circle.in-progress {
+        background: var(--accent-violet);
+        color: white;
+        box-shadow: 0 0 12px rgba(143, 87, 255, 0.4);
+    }
+    .pipeline-node-circle.pending {
+        background: white;
+        border: 3.5px solid var(--warning);
+        color: var(--warning);
+    }
+    .pipeline-node-circle.upcoming {
+        background: white;
+        border: 3.5px solid #A1A5B7;
+        color: #A1A5B7;
+    }
+    .pipeline-step-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-top: 8px;
+    }
+    .pipeline-step-duration {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        margin-top: 2px;
+        font-weight: 500;
+    }
+
+    /* Horizontal cards grid */
+    .phase-cards-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    .phase-card {
+        background: white;
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+        min-height: 400px;
+        position: relative;
+        box-sizing: border-box;
+    }
+    .phase-card.active {
+        border: 2px solid var(--accent-violet);
+        box-shadow: 0px 12px 36px rgba(143, 87, 255, 0.12);
+    }
+    .phase-card-header {
+        margin-bottom: 1rem;
+    }
+    .phase-card-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .phase-card-duration {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        margin-top: 2px;
+        display: block;
+        font-weight: 500;
+    }
+    .phase-tasks-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .phase-task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 0.8rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        line-height: 1.35;
+    }
+    .phase-task-checkbox {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1.5px solid #A1A5B7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        cursor: pointer;
+        margin-top: 1px;
+        transition: all 0.2s;
+    }
+    .phase-task-checkbox.checked-green {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
+    }
+    .phase-task-checkbox.checked-blue {
+        background: #2563EB;
+        border-color: #2563EB;
+        color: white;
+    }
+    .phase-task-checkbox.checked-purple {
+        background: var(--accent-violet);
+        border-color: var(--accent-violet);
+        color: white;
+    }
+    .tools-focus-section {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--card-border);
+    }
+    .tools-focus-label {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+    }
+    .tools-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 1rem;
+    }
+    .tool-pill {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+    .tool-pill.theme-completed-green { background: rgba(34, 197, 94, 0.08); color: var(--success); }
+    .tool-pill.theme-completed-blue { background: rgba(37, 99, 235, 0.08); color: #2563EB; }
+    .tool-pill.theme-in-progress { background: rgba(143, 87, 255, 0.08); color: var(--accent-violet); }
+    .tool-pill.theme-pending { background: rgba(245, 158, 11, 0.08); color: var(--warning); }
+    .tool-pill.theme-upcoming { background: rgba(233, 67, 150, 0.08); color: var(--accent-pink); }
+    
+    .phase-progress-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .phase-progress-bar {
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: #EEF0F7;
+        overflow: hidden;
+    }
+    .phase-progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.3s;
+    }
+    .phase-progress-fill.theme-completed-green { background: var(--success); }
+    .phase-progress-fill.theme-completed-blue { background: #2563EB; }
+    .phase-progress-fill.theme-in-progress { background: var(--accent-violet); }
+    
+    .phase-progress-text {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-light);
+        text-align: center;
+    }
+
+    /* Right column components */
+    .progress-ring-container {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .progress-ring {
+        transform: rotate(-90deg);
+    }
+    .progress-ring__circle {
+        transition: stroke-dashoffset 0.35s;
+        transform-origin: 50% 50%;
+    }
+    .progress-ring-text {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .progress-num {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+    }
+    .progress-lbl {
+        font-size: 0.55rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    .ahead-badge {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.15);
+        border-radius: 12px;
+        color: var(--success);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        text-align: center;
+    }
+    .rocket-container {
+        animation: floatRocket 3s ease-in-out infinite;
+    }
+    @keyframes floatRocket {
+        0%, 100% { transform: translateY(0) translateX(0); }
+        50% { transform: translateY(-6px) translateX(6px); }
+    }
+
+    .skills-master-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .skill-master-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .skill-master-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .skill-master-bar {
+        width: 100%;
+        height: 6px;
+        background: #EEF0F7;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .skill-master-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s;
+    }
+    .skill-master-fill.color-1 { background: var(--accent-violet); }
+    .skill-master-fill.color-2 { background: #2563EB; }
+    .skill-master-fill.color-3 { background: #0D9488; }
+    .skill-master-fill.color-4 { background: var(--warning); }
+
+    .learning-path-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+    }
+    .learning-path-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        background: #F8F9FD;
+        border: 1px solid var(--card-border);
+    }
+    .learning-path-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+    .learning-path-num.num-1 { background: #06B6D4; }
+    .learning-path-num.num-2 { background: var(--success); }
+    .learning-path-num.num-3 { background: var(--warning); }
+    .learning-path-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .learning-path-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+    .learning-path-duration {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        margin-top: 1px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .view-detailed-plan-btn {
+        width: 100%;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .view-detailed-plan-btn:hover {
+        background: var(--accent-violet-light);
+    }
+
+    /* Bottom row elements */
+    .milestones-timeline-vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        position: relative;
+    }
+    .milestones-timeline-vertical::before {
+        content: '';
+        position: absolute;
+        left: 7px;
+        top: 5px;
+        bottom: 5px;
+        width: 2px;
+        background: #E4E6EF;
+    }
+    .milestone-v-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+    }
+    .milestone-v-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: white;
+        border: 3.5px solid #A1A5B7;
+        flex-shrink: 0;
+        box-sizing: border-box;
+    }
+    .milestone-v-dot.completed { border-color: var(--success); }
+    .milestone-v-dot.in-progress { border-color: var(--accent-violet); }
+    .milestone-v-date {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        font-weight: 600;
+        width: 80px;
+        flex-shrink: 0;
+    }
+    .milestone-v-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .milestone-v-status-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 8px;
+    }
+    .milestone-v-status-badge.completed { background: var(--success-bg); color: var(--success); }
+    .milestone-v-status-badge.in-progress { background: var(--accent-violet-light); color: var(--accent-violet); }
+    .milestone-v-status-badge.upcoming { background: #EEF0F7; color: var(--text-light); }
+
+    .roadmap-insights-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .roadmap-insight-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .roadmap-insight-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .roadmap-insight-icon.streak { background: rgba(245, 158, 11, 0.08); color: var(--warning); }
+    .roadmap-insight-icon.trend { background: rgba(143, 87, 255, 0.08); color: var(--accent-violet); }
+    .roadmap-insight-icon.growth { background: rgba(233, 67, 150, 0.08); color: var(--accent-pink); }
+    .roadmap-insight-text {
+        font-size: 0.75rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        line-height: 1.35;
+    }
+
+    .ai-rec-card {
+        background: linear-gradient(135deg, #7C4DFF 0%, #4424A6 100%);
+        color: white;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0px 8px 24px rgba(124, 77, 255, 0.25);
+    }
+    .ai-rec-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0.75rem;
+    }
+    .ai-rec-bot-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ai-rec-label {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .ai-rec-text {
+        font-size: 0.8rem;
+        line-height: 1.45;
+        opacity: 0.9;
+        margin: 0 0 1rem;
+        font-weight: 500;
+    }
+    .generate-personal-plan-btn {
+        width: 100%;
+        background: white;
+        color: var(--text-dark);
+        border: none;
+        padding: 0.65rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.25s ease;
+    }
+    .generate-personal-plan-btn:hover {
+        background: #F3F4F6;
+        transform: translateY(-1px);
+    }
+
+    /* Edit Goal modal overlay */
+    .roadmap-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(10, 6, 30, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeInOverlay 0.25s ease-out;
+    }
+    @keyframes fadeInOverlay {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .roadmap-modal-content {
+        background: white;
+        border: 1px solid rgba(143, 87, 255, 0.25);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 440px;
+        padding: 1.75rem;
+        box-shadow: 0px 20px 50px rgba(10, 6, 30, 0.15);
+        animation: slideUpModal 0.25s ease-out;
+    }
+    @keyframes slideUpModal {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .roadmap-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+    .roadmap-modal-header h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        font-family: 'Sora', sans-serif;
+    }
+    .modal-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-light);
+        cursor: pointer;
+    }
+    .modal-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 1.25rem;
+    }
+    .modal-form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-light);
+    }
+    .modal-form-group input, .modal-form-group select {
+        padding: 0.8rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--card-border);
+        background: white;
+        color: var(--text-dark);
+        font-family: inherit;
+        font-size: 0.9rem;
+        outline: none;
+    }
+    .modal-form-group input:focus, .modal-form-group select:focus {
+        border-color: var(--accent-violet);
+    }
+    .modal-submit-btn {
+        width: 100%;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.25);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
+    }
+    .modal-submit-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0px 6px 16px rgba(143, 87, 255, 0.35);
+    }
+
+    .edit-goal-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: 1.5px solid var(--accent-violet);
+        color: var(--accent-violet);
+        padding: 0.6rem 1.25rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .edit-goal-btn:hover {
+        background: var(--accent-violet-light);
+    }
+
+    .export-roadmap-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        padding: 0.65rem 1.35rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0px 4px 12px rgba(143, 87, 255, 0.25);
+        transition: all 0.25s ease;
+    }
+    .export-roadmap-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0px 6px 16px rgba(143, 87, 255, 0.35);
+    }
+
+    .loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.15);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="roadmap-container">
+    
+    <!-- Breadcrumb -->
+    <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 500; display:flex; gap: 4px;">
+        <span>Career Roadmap</span>
+        <span>&gt;&gt;</span>
+        <span id="breadcrumb-role" style="color: var(--accent-violet); font-weight: 600;"></span>
+    </div>
+
+    <!-- Redesigned Main Layout Grid -->
+    <div class="assessment-layout">
+        
+        <!-- Left Main Column (70%) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Page Title, Subtitle & Edit Button -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 style="font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem;">Your Career Roadmap 🚀</h1>
+                    <p style="color: var(--text-light); margin: 0; font-size: 0.95rem;">A personalized path to become a successful <span id="subtitle-role" style="font-weight:600;"></span>.</p>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="edit-goal-btn" onclick="openEditGoalModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Edit Goal
+                    </button>
+                    <button class="export-roadmap-btn" onclick="exportRoadmap()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export Roadmap
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row of 4 Metric Cards -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon-box role-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Target Role</span>
+                        <span class="metric-value" id="metric-role"></span>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-icon-box timeline-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Target Timeline</span>
+                        <span class="metric-value" id="metric-timeline"></span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box progress-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/></svg>
+                    </div>
+                    <div class="metric-info" style="width: 100%;">
+                        <span class="metric-label">Current Progress</span>
+                        <span class="metric-value" id="metric-progress-text"></span>
+                        <div class="metric-progress-bar">
+                            <div class="metric-progress-fill" id="metric-progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon-box completion-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+                    </div>
+                    <div class="metric-info">
+                        <span class="metric-label">Est. Completion</span>
+                        <span class="metric-value" id="metric-completion"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horizontal pipeline nodes timeline -->
+            <div class="pipeline-container">
+                <div class="pipeline-track"></div>
+                <div class="pipeline-steps" id="pipeline-steps">
+                    <!-- Rendered step nodes -->
+                </div>
+            </div>
+
+            <!-- Horizontal Phase Cards Container (5 cards) -->
+            <div class="phase-cards-container" id="phase-cards">
+                <!-- Rendered phase cards -->
+            </div>
+
+            <!-- Bottom Three Sub-Columns (Milestones, Insights, Recommendation) -->
+            <div style="display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 1.25rem;">
+                <!-- Column 1: Upcoming Milestones -->
+                <div class="app-card">
+                    <h4 class="sidebar-section-title" style="margin-bottom: 1.25rem;">Upcoming Milestones</h4>
+                    <div class="milestones-timeline-vertical" id="upcoming-milestones">
+                        <!-- Rendered vertical milestones -->
+                    </div>
+                </div>
+
+                <!-- Column 2: Roadmap Insights -->
+                <div class="app-card">
+                    <div class="card-title-row" style="margin-bottom: 1.25rem;">
+                        <h4 class="sidebar-section-title" style="margin: 0;">Roadmap Insights</h4>
+                        <a href="#" style="font-size: 0.75rem;">View Insights →</a>
+                    </div>
+                    <div class="roadmap-insights-list" id="roadmap-insights">
+                        <!-- Rendered insights -->
+                    </div>
+                </div>
+
+                <!-- Column 3: AI Recommendation -->
+                <div class="app-card ai-rec-card">
+                    <div class="ai-rec-header">
+                        <div class="ai-rec-bot-icon">
+                            <svg width="20" height="20" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="32" cy="32" r="28" fill="#FFF" opacity="0.1"/>
+                                <rect x="14" y="14" width="36" height="26" rx="8" fill="#FFF" stroke="#FFF" stroke-width="1.5"/>
+                                <rect x="18" y="18" width="28" height="18" rx="4" fill="#0A061E"/>
+                                <circle cx="26" cy="27" r="2.5" fill="#00FFCC"/>
+                                <circle cx="38" cy="27" r="2.5" fill="#00FFCC"/>
+                                <path d="M29 31.5c1.5 1 3.5 1 5 0" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="ai-rec-label">AI Recommendation</span>
+                    </div>
+                    <p class="ai-rec-text" id="ai-rec-text"></p>
+                    <button class="generate-personal-plan-btn" onclick="openEditGoalModal()">
+                        Generate Personalized Plan
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Side Panel Column (30%) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            
+            <!-- Overall Progress Gauge Card -->
+            <div class="app-card" style="padding: 1.25rem;">
+                <h4 class="sidebar-section-title" style="margin-bottom: 1rem;">Overall Roadmap Progress</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    
+                    <!-- Circular Dial -->
+                    <div class="progress-ring-container">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-ring__background" stroke="#EEF0F7" stroke-width="6" fill="transparent" r="32" cx="40" cy="40"/>
+                            <circle class="progress-ring__circle" stroke="url(#progressGradRight)" stroke-width="6" fill="transparent" r="32" cx="40" cy="40" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="progressGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#8F57FF"/>
+                                    <stop offset="100%" stop-color="#E94396"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="progress-ring-text">
+                            <span class="progress-num" id="right-overall-pct">32%</span>
+                            <span class="progress-lbl">Completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Rocket Graphic -->
+                    <div class="rocket-container" style="padding-right: 1.5rem;">
+                        <svg width="55" height="55" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(10, 10)">
+                                <circle cx="22" cy="22" r="22" fill="url(#botAura)" opacity="0.3"/>
+                                <path d="M6 38c0-3 3-6 12-6s12 3 12 6v3H6v-3z" fill="url(#botBodyGradient)"/>
+                                <rect x="5" y="18" width="34" height="24" rx="8" fill="url(#botFaceGradient)" stroke="#8F57FF" stroke-width="1.5"/>
+                                <rect x="9" y="22" width="26" height="16" rx="4" fill="#0A061E"/>
+                                <circle cx="16" cy="30" r="2.5" fill="#00FFCC"/>
+                                <circle cx="28" cy="30" r="2.5" fill="#00FFCC"/>
+                                <path d="M19 34c1.5 1 3.5 1 5 0" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                                <circle cx="22" cy="10" r="2.5" fill="#E94396"/>
+                            </g>
+                            <path d="M48 12l2-1M52 16l1-2" stroke="#FFC700" stroke-width="2" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="botAura" x1="0" y1="0" x2="44" y2="44">
+                                    <stop stop-color="#8F57FF" stop-opacity="0.3"/>
+                                    <stop offset="100%" stop-color="#E94396" stop-opacity="0.1"/>
+                                </linearGradient>
+                                <linearGradient id="botBodyGradient" x1="6" y1="32" x2="30" y2="41">
+                                    <stop stop-color="#7C3AED"/>
+                                    <stop offset="100%" stop-color="#E94396"/>
+                                </linearGradient>
+                                <linearGradient id="botFaceGradient" x1="5" y1="18" x2="39" y2="42">
+                                    <stop stop-color="#FFFFFF"/>
+                                    <stop offset="100%" stop-color="#F3F0FF"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Ahead Badge -->
+                <div class="ahead-badge">
+                    You're ahead of <span id="right-ahead-pct">68%</span> of students! 🚀
+                </div>
+            </div>
+
+            <!-- Top Skills to Master Next -->
+            <div class="app-card">
+                <div class="card-title-row" style="margin-bottom: 1.25rem;">
+                    <h4 class="sidebar-section-title" style="margin:0;">Top Skills to Master Next</h4>
+                    <a href="#" style="font-size: 0.75rem;">View All</a>
+                </div>
+                <div class="skills-master-list" id="top-skills">
+                    <!-- Rendered skills -->
+                </div>
+            </div>
+
+            <!-- Recommended Learning Path -->
+            <div class="app-card">
+                <h4 class="sidebar-section-title" style="margin-bottom: 1.25rem;">Recommended Learning Path</h4>
+                <div class="learning-path-list" id="learning-path">
+                    <!-- Rendered path items -->
+                </div>
+                <button class="view-detailed-plan-btn" onclick="openEditGoalModal()">View Detailed Plan</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- EDIT GOAL MODAL                           -->
+<!-- ========================================== -->
+<div class="roadmap-modal-overlay" id="edit-goal-modal" style="display: none;">
+    <div class="roadmap-modal-content">
+        <div class="roadmap-modal-header">
+            <h3>Configure Your Career Roadmap</h3>
+            <button class="modal-close-btn" onclick="closeEditGoalModal()">&times;</button>
+        </div>
+        <div class="roadmap-modal-body">
+            <div class="modal-form-group">
+                <label for="inputCareerGoal">Target Role / Career Goal</label>
+                <input type="text" id="inputCareerGoal" placeholder="e.g. Software Engineer (Full Stack)" value="{{ roadmap.role }}">
+            </div>
+            <div class="modal-form-group">
+                <label for="inputTimeframe">Target Timeline</label>
+                <select id="inputTimeframe">
+                    <option value="6-12 Months">6-12 Months</option>
+                    <option value="12-18 Months">12-18 Months</option>
+                    <option value="18-24 Months" selected>18-24 Months</option>
+                    <option value="2-3 Years">2-3 Years</option>
+                </select>
+            </div>
+            <button class="modal-submit-btn" onclick="submitRoadmapGoal()">
+                <span id="submit-btn-text">Generate Plan</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Loading Overlay -->
+<div class="roadmap-modal-overlay" id="loading-overlay-generation" style="display: none; flex-direction: column; gap: 1.25rem; z-index: 1100;">
+    <div class="loading-spinner"></div>
+    <div style="color: white; font-family: 'Sora', sans-serif; font-size: 1.05rem; font-weight: 600; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+        AI is tailoring your personalized career path...<br>
+        <span style="font-size: 0.8rem; font-weight: 400; opacity: 0.8; margin-top: 5px; display: block;">This may take a moment.</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Roadmap data state
+    let roadmapData = null;
+
+    // Load initial JSON data passed from django
+    try {
+        roadmapData = {{ roadmap_json|safe }};
+    } catch(e) {
+        console.error("Failed to parse roadmap data", e);
+    }
+
+    // Modal control
+    function openEditGoalModal() {
+        document.getElementById('edit-goal-modal').style.display = 'flex';
+        // Set values from current state
+        if (roadmapData) {
+            document.getElementById('inputCareerGoal').value = roadmapData.role;
+            document.getElementById('inputTimeframe').value = roadmapData.timeframe;
+        }
+    }
+
+    function closeEditGoalModal() {
+        document.getElementById('edit-goal-modal').style.display = 'none';
+    }
+
+    // Sync task checking/unchecking with backend PUT request
+    async function saveStateToDB() {
+        try {
+            const response = await fetch("{% url 'roadmap:generate' %}", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    data: roadmapData.data,
+                    overall_progress: roadmapData.overall_progress
+                })
+            });
+            const resData = await response.json();
+            if (!resData.success) {
+                console.error("Backend failed to save state:", resData.message);
+            }
+        } catch(e) {
+            console.error("Network error while saving state:", e);
+        }
+    }
+
+    // Toggle checklist checkbox
+    function toggleTask(phaseIdx, taskIdx) {
+        if (!roadmapData || !roadmapData.data || !roadmapData.data.phases) return;
+        
+        const phase = roadmapData.data.phases[phaseIdx];
+        const task = phase.tasks[taskIdx];
+        task.completed = !task.completed;
+
+        // Recalculate completed count and progress % for this phase
+        const completedTasks = phase.tasks.filter(t => t.completed).length;
+        phase.completed_count = `${completedTasks}/${phase.tasks.length}`;
+        phase.progress_pct = Math.round((completedTasks / phase.tasks.length) * 100);
+
+        // Determine phase status
+        if (completedTasks === phase.tasks.length) {
+            phase.status = "Completed";
+        } else if (completedTasks > 0) {
+            phase.status = "In Progress";
+        } else {
+            phase.status = phaseIdx === 0 ? "Pending" : "Upcoming";
+        }
+
+        // Recalculate overall progress
+        let totalTasks = 0;
+        let totalCompleted = 0;
+        roadmapData.data.phases.forEach(p => {
+            totalTasks += p.tasks.length;
+            totalCompleted += p.tasks.filter(t => t.completed).length;
+        });
+        roadmapData.overall_progress = Math.round((totalCompleted / totalTasks) * 100);
+
+        // Update overall ahead percentage based on progress
+        roadmapData.data.ahead_percentage = Math.min(99, Math.round(roadmapData.overall_progress * 1.5 + 20));
+
+        // Re-render UI elements
+        renderRoadmap(roadmapData);
+
+        // Persist to database in background
+        saveStateToDB();
+    }
+
+    // Generate new roadmap via API POST request
+    async function submitRoadmapGoal() {
+        const goal = document.getElementById('inputCareerGoal').value.trim();
+        const timeframe = document.getElementById('inputTimeframe').value;
+
+        if (!goal) {
+            showToast("Please enter a target role or career goal.", "error");
+            return;
+        }
+
+        closeEditGoalModal();
+        document.getElementById('loading-overlay-generation').style.display = 'flex';
+
+        try {
+            const response = await fetch("{% url 'roadmap:generate' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    career_goal: goal,
+                    timeframe: timeframe
+                })
+            });
+
+            const resData = await response.json();
+            if (resData.success) {
+                roadmapData = resData.data;
+                renderRoadmap(roadmapData);
+            } else {
+                showToast("Error: " + resData.message, "error");
+            }
+        } catch(e) {
+            showToast("Network error: Failed to connect to AI Career Planner.", "error");
+        } finally {
+            document.getElementById('loading-overlay-generation').style.display = 'none';
+        }
+    }
+
+    // Export Roadmap stub
+    function exportRoadmap() {
+        showToast("Preparing your career roadmap PDF export... Your download will start shortly!", "success");
+    }
+
+    // Main Renderer function
+    function renderRoadmap(data) {
+        if (!data) return;
+
+        // Top titles & subtitles
+        document.getElementById('breadcrumb-role').innerText = data.role;
+        document.getElementById('subtitle-role').innerText = data.role;
+        
+        // Metric card values
+        document.getElementById('metric-role').innerText = data.role;
+        document.getElementById('metric-timeline').innerText = data.timeframe;
+        document.getElementById('metric-completion').innerText = data.est_completion;
+        document.getElementById('metric-progress-text').innerText = `${data.overall_progress}%`;
+        document.getElementById('metric-progress-bar-fill').style.width = `${data.overall_progress}%`;
+
+        // Right sidebar overall progress
+        document.getElementById('right-overall-pct').innerText = `${data.overall_progress}%`;
+        document.getElementById('right-ahead-pct').innerText = `${data.data.ahead_percentage}%`;
+
+        // Update progress ring circular path offset
+        const circle = document.querySelector('.progress-ring__circle');
+        if (circle) {
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            const offset = circumference - (data.overall_progress / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Render pipeline steps
+        const pipelineContainer = document.getElementById('pipeline-steps');
+        pipelineContainer.innerHTML = '';
+        
+        // Render phase cards
+        const phaseCardsContainer = document.getElementById('phase-cards');
+        phaseCardsContainer.innerHTML = '';
+
+        if (data.data.phases && Array.isArray(data.data.phases)) {
+            data.data.phases.forEach((phase, phaseIdx) => {
+                
+                // --- Part 1: Render Node in Horizontal Track ---
+                const node = document.createElement('div');
+                node.className = 'pipeline-step-node';
+                node.style.width = `${100 / data.data.phases.length}%`;
+
+                // Set node circle class based on status
+                let circleClass = 'upcoming';
+                let iconHTML = phaseIdx + 1; // default fallback
+
+                if (phase.status === 'Completed') {
+                    // alternate completed colors as in design image: first 2 completed (foundation is green, core is blue)
+                    circleClass = phaseIdx === 0 ? 'completed' : 'completed-blue';
+                    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+                } else if (phase.status === 'In Progress') {
+                    circleClass = 'in-progress';
+                    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2l.5-.5M12 3h.01M16.5 4.5l3 3M19 8a2.121 2.121 0 0 1-3 3L6 21l-3-3L13 8a2.121 2.121 0 0 1 3-3z"/></svg>`;
+                } else if (phase.status === 'Pending') {
+                    circleClass = 'pending';
+                    iconHTML = `<circle cx="12" cy="12" r="4" fill="var(--warning)"/>`;
+                } else {
+                    circleClass = 'upcoming';
+                    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`;
+                }
+
+                node.innerHTML = `
+                    <div class="pipeline-node-circle ${circleClass}">
+                        ${iconHTML}
+                    </div>
+                    <div class="pipeline-step-title">${phase.title}</div>
+                    <div class="pipeline-step-duration">${phase.duration}</div>
+                `;
+                pipelineContainer.appendChild(node);
+
+
+                // --- Part 2: Render Detailed Phase Card ---
+                const card = document.createElement('div');
+                card.className = `phase-card ${phase.active ? 'active' : ''}`;
+                
+                // Formulate tasks checklist items
+                let tasksHTML = '';
+                if (phase.tasks && Array.isArray(phase.tasks)) {
+                    phase.tasks.forEach((task, taskIdx) => {
+                        let chkClass = '';
+                        let checkIcon = '';
+                        if (task.completed) {
+                            if (phase.status === 'Completed') {
+                                chkClass = phaseIdx === 0 ? 'checked-green' : 'checked-blue';
+                            } else {
+                                chkClass = 'checked-purple';
+                            }
+                            checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+                        }
+                        
+                        tasksHTML += `
+                            <li class="phase-task-item" onclick="toggleTask(${phaseIdx}, ${taskIdx})">
+                                <div class="phase-task-checkbox ${chkClass}">
+                                    ${checkIcon}
+                                </div>
+                                <span style="${task.completed ? 'color: var(--text-light); text-decoration: line-through;' : ''}">${task.title}</span>
+                            </li>
+                        `;
+                    });
+                }
+
+                // Formulate tools focus pills
+                let toolsHTML = '';
+                let themePillClass = 'theme-upcoming';
+                if (phase.status === 'Completed') {
+                    themePillClass = phaseIdx === 0 ? 'theme-completed-green' : 'theme-completed-blue';
+                } else if (phase.status === 'In Progress') {
+                    themePillClass = 'theme-in-progress';
+                } else if (phase.status === 'Pending') {
+                    themePillClass = 'theme-pending';
+                }
+                
+                if (phase.tools && Array.isArray(phase.tools)) {
+                    phase.tools.forEach(tool => {
+                        toolsHTML += `<span class="tool-pill ${themePillClass}">${tool}</span>`;
+                    });
+                }
+
+                // Card Progress Bar
+                let barColor = 'theme-in-progress';
+                if (phase.status === 'Completed') {
+                    barColor = phaseIdx === 0 ? 'theme-completed-green' : 'theme-completed-blue';
+                }
+                
+                let progressFooterHTML = '';
+                if (phase.status === 'Pending') {
+                    progressFooterHTML = `<div class="phase-progress-text" style="color: var(--warning);">Pending</div>`;
+                } else if (phase.status === 'Upcoming') {
+                    progressFooterHTML = `<div class="phase-progress-text" style="color: var(--text-light);">Upcoming</div>`;
+                } else {
+                    const completedText = phase.status === 'Completed' ? 'Completed' : 'Progress';
+                    progressFooterHTML = `
+                        <div class="phase-progress-footer">
+                            <div class="phase-progress-bar">
+                                <div class="phase-progress-fill ${barColor}" style="width: ${phase.progress_pct}%"></div>
+                            </div>
+                            <div class="phase-progress-text" style="color: ${phase.status === 'Completed' ? (phaseIdx === 0 ? 'var(--success)' : '#2563EB') : 'var(--accent-violet)'}">${completedText} ${phase.completed_count}</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="phase-card-header">
+                            <h4 class="phase-card-title">${phase.title}</h4>
+                            <span class="phase-card-duration">${phase.duration}</span>
+                        </div>
+                        <ul class="phase-tasks-list">
+                            ${tasksHTML}
+                        </ul>
+                    </div>
+                    <div class="tools-focus-section">
+                        <span class="tools-focus-label">Tools to Focus</span>
+                        <div class="tools-pills">
+                            ${toolsHTML}
+                        </div>
+                        ${progressFooterHTML}
+                    </div>
+                `;
+                phaseCardsContainer.appendChild(card);
+            });
+        }
+
+        // Render Right Sidebar Top Skills
+        const topSkillsContainer = document.getElementById('top-skills');
+        topSkillsContainer.innerHTML = '';
+        if (data.data.top_skills && Array.isArray(data.data.top_skills)) {
+            data.data.top_skills.forEach((skill, idx) => {
+                const colorIdx = (idx % 4) + 1;
+                const skillRow = document.createElement('div');
+                skillRow.className = 'skill-master-row';
+                skillRow.innerHTML = `
+                    <div class="skill-master-info">
+                        <span>${skill.name}</span>
+                        <span>${skill.progress_pct}%</span>
+                    </div>
+                    <div class="skill-master-bar">
+                        <div class="skill-master-fill color-${colorIdx}" style="width: ${skill.progress_pct}%"></div>
+                    </div>
+                `;
+                topSkillsContainer.appendChild(skillRow);
+            });
+        }
+
+        // Render Right Sidebar Learning Path
+        const learningPathContainer = document.getElementById('learning-path');
+        learningPathContainer.innerHTML = '';
+        if (data.data.learning_path && Array.isArray(data.data.learning_path)) {
+            data.data.learning_path.forEach((path, idx) => {
+                const numIdx = (idx % 3) + 1;
+                const item = document.createElement('div');
+                item.className = 'learning-path-item';
+                item.innerHTML = `
+                    <div class="learning-path-num num-${numIdx}">${numIdx}</div>
+                    <div class="learning-path-info">
+                        <span class="learning-path-title">${path.title}</span>
+                        <span class="learning-path-duration">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ${path.duration}
+                        </span>
+                    </div>
+                `;
+                learningPathContainer.appendChild(item);
+            });
+        }
+
+        // Render Bottom Column 1: Vertical Milestones
+        const milestonesContainer = document.getElementById('upcoming-milestones');
+        milestonesContainer.innerHTML = '';
+        if (data.data.upcoming_milestones && Array.isArray(data.data.upcoming_milestones)) {
+            data.data.upcoming_milestones.forEach(ms => {
+                const item = document.createElement('div');
+                item.className = 'milestone-v-item';
+                
+                let dotClass = '';
+                let badgeClass = 'upcoming';
+                if (ms.status === 'Completed') {
+                    dotClass = 'completed';
+                    badgeClass = 'completed';
+                } else if (ms.status === 'In Progress') {
+                    dotClass = 'in-progress';
+                    badgeClass = 'in-progress';
+                }
+
+                item.innerHTML = `
+                    <div class="milestone-v-dot ${dotClass}"></div>
+                    <div class="milestone-v-date">${ms.date}</div>
+                    <div class="milestone-v-title">${ms.title}</div>
+                    <span class="milestone-v-status-badge ${badgeClass}">${ms.status}</span>
+                `;
+                milestonesContainer.appendChild(item);
+            });
+        }
+
+        // Render Bottom Column 2: Insights
+        const insightsContainer = document.getElementById('roadmap-insights');
+        insightsContainer.innerHTML = '';
+        if (data.data.insights && Array.isArray(data.data.insights)) {
+            data.data.insights.forEach(insight => {
+                const item = document.createElement('div');
+                item.className = 'roadmap-insight-item';
+                
+                let iconHTML = '';
+                if (insight.icon_type === 'streak') {
+                    // Bulb
+                    iconHTML = `
+                        <div class="roadmap-insight-icon streak">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .5 2.5 1.5 3.5.7.8 1.3 1.5 1.5 2.5"/><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/></svg>
+                        </div>
+                    `;
+                } else if (insight.icon_type === 'trend') {
+                    // Growth chart
+                    iconHTML = `
+                        <div class="roadmap-insight-icon trend">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        </div>
+                    `;
+                } else {
+                    // Target
+                    iconHTML = `
+                        <div class="roadmap-insight-icon growth">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        </div>
+                    `;
+                }
+
+                item.innerHTML = `
+                    ${iconHTML}
+                    <div class="roadmap-insight-text">${insight.title}</div>
+                `;
+                insightsContainer.appendChild(item);
+            });
+        }
+
+        // Render Bottom Column 3: AI Recommendation Text
+        document.getElementById('ai-rec-text').innerText = data.data.recommendation || "Based on your progress, I recommend continuing with key milestones.";
+    }
+
+    // Initial draw on DOM load
+    function initRoadmap() {
+        if (roadmapData) {
+            renderRoadmap(roadmapData);
+        }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRoadmap);
+    } else {
+        initRoadmap();
+    }
+</script>
+{% endblock %}
