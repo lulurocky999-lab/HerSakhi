@@ -5,8 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .models import AssessmentResponse
 from apps.accounts.models import UserProfile
-from ai.services import extract_career_insights
+from ai.services import extract_career_insights, analyze_skill_gap
 from apps.dashboard.models import UserStat, Achievement
+from apps.skill_gap.models import SkillGapAnalysis
 
 @csrf_exempt
 @login_required
@@ -67,6 +68,25 @@ def submit_assessment(request):
                 if stat.profile_progress < 100:
                     stat.profile_progress = min(100, stat.profile_progress + 50)
                 stat.save()
+                
+                # Automatically run Skill Gap Analysis so it is ready
+                target_role = profile.dream_role or "Generalist"
+                current_skills = profile.technical_skills
+                
+                skill_gap_insights = analyze_skill_gap(current_skills, target_role)
+                if skill_gap_insights.get('success') is not False:
+                    SkillGapAnalysis.objects.filter(user=request.user).delete()
+                    SkillGapAnalysis.objects.create(
+                        user=request.user,
+                        target_role=target_role,
+                        analysis_data=skill_gap_insights
+                    )
+                    
+                    total_skills = len(skill_gap_insights.get('current_skills_validated', [])) + len(skill_gap_insights.get('missing_skills', []))
+                    if total_skills > 0:
+                        strength = int((len(skill_gap_insights.get('current_skills_validated', [])) / total_skills) * 100)
+                        stat.skills_strength = strength
+                        stat.save()
             
             # Unlock Achievement
             Achievement.objects.get_or_create(
