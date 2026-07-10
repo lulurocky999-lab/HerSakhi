@@ -19,5 +19,3 @@ Junior React Developer at WebApps Co. (Jun 2022 - Dec 2023)
 - Maintained core React components and styled layouts.
 - Integrated REST APIs with Redux state management.
 
-EDUCATION
-Bachelor of Science in Information Technology - Mumbai University (2019 - 2022) - 9.0 CGPA
