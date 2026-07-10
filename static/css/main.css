@@ -2016,7 +2016,7 @@ button {
 .ai-companion__container {
   width: 100%;
   max-width: var(--container-max);
-  height: 95vh;
+  height: 80vh;
   position: relative;
   display: flex;
   align-items: center;
@@ -2059,17 +2059,15 @@ button {
 /* Dashboard (hidden initially) */
 .ai-dashboard {
   position: absolute;
-  width: 95%;
+  width: 90%;
   max-width: 1000px;
-  height: 95%;
+  height: 90%;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: auto 1fr auto;
   gap: 16px;
   opacity: 0;
   pointer-events: none;
-  overflow-y: auto;
-  padding-right: 8px;
 }
 
 .ai-dashboard__header {
