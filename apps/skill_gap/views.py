@@ -38,9 +38,9 @@ def analyze_gap(request):
             # Update user stats
             stat, _ = UserStat.objects.get_or_create(user=request.user)
             # Calculate skills strength based on missing skills ratio
-            total_skills = len(ai_response.get('current_skills_validated', [])) + len(ai_response.get('missing_skills', []))
+            total_skills = ai_response.get('skills_have', 0) + ai_response.get('skills_improve', 0) + ai_response.get('skills_lack', 0)
             if total_skills > 0:
-                strength = int((len(ai_response.get('current_skills_validated', [])) / total_skills) * 100)
+                strength = int((ai_response.get('skills_have', 0) / total_skills) * 100)
                 stat.skills_strength = strength
                 stat.save()
             

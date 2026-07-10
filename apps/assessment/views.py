@@ -82,9 +82,9 @@ def submit_assessment(request):
                         analysis_data=skill_gap_insights
                     )
                     
-                    total_skills = len(skill_gap_insights.get('current_skills_validated', [])) + len(skill_gap_insights.get('missing_skills', []))
+                    total_skills = skill_gap_insights.get('skills_have', 0) + skill_gap_insights.get('skills_improve', 0) + skill_gap_insights.get('skills_lack', 0)
                     if total_skills > 0:
-                        strength = int((len(skill_gap_insights.get('current_skills_validated', [])) / total_skills) * 100)
+                        strength = int((skill_gap_insights.get('skills_have', 0) / total_skills) * 100)
                         stat.skills_strength = strength
                         stat.save()
             
